@@ -108,11 +108,12 @@ public class MainActivity extends AppCompatActivity {
                     String country = response.getString("Country");
                     int releaseYear = Integer.parseInt(response.getString("Year"));
 
+                    /*
                     currentMovie.setTitle(title);
                     currentMovie.setDescription(description);
                     currentMovie.setReleaseYear(releaseYear);
                     currentMovie.setCountry(country);
-
+                    */
 
                     movieText.setText(title + " (" + releaseYear + ")");
 
