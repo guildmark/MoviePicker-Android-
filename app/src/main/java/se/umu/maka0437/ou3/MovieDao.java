@@ -3,6 +3,7 @@ package se.umu.maka0437.ou3;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
+import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import java.util.List;
@@ -22,10 +23,19 @@ public interface MovieDao {
     @Query("SELECT * FROM movie WHERE releaseYear LIKE :year")
     List<Movie> findByYear(int year);
 
+    @Query("SELECT * FROM movie WHERE title LIKE :title")
+    Movie[] findByTitle(String title);
+
+    @Delete
+    void deleteMovie(Movie movie);
+
+    @Query("DELETE FROM movie WHERE title LIKE :title")
+    void deleteAll(String title);
+
     @Insert
     void insertAll(Movie... movies);
 
-    @Delete
-    void delete(Movie movie);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    void insertMovie(Movie movie);
 
 }

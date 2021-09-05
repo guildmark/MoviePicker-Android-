@@ -4,8 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.LiveData;
+import androidx.room.Room;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
@@ -28,6 +31,7 @@ import com.google.gson.JsonIOException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,6 +41,8 @@ public class MainActivity extends AppCompatActivity {
     TextView movieText;
     Movie currentMovie;
     ImageView startImage;
+    AppDatabase db;
+    public LiveData<List<Movie>> movies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +61,43 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //Find a specific movie
-                getMovie();
+                //getMovie();
+                List<Movie> currentMovies = db.movieDao().getAll();
+                int random = ThreadLocalRandom.current().nextInt(0,3);
+                movieText.setText(currentMovies.get(random).title);
+                //Check to see if database is working
             }
         });
+
+        //Create database if not previously done
+        if(db == null) {
+            db = Room.databaseBuilder(getApplicationContext(),
+                    AppDatabase.class, "movieDB")
+                    .fallbackToDestructiveMigration()
+                    .allowMainThreadQueries() //temporary until fix?
+                    .build();
+        }
+
+        /*
+        Movie testMovie1 = new Movie("Blade Runner", 1982);
+        Movie testMovie2 = new Movie("Ben Hur", 1959);
+        Movie testMovie3 = new Movie("The Snake Pit", 1949);
+
+        insertMovie(testMovie1);
+        insertMovie(testMovie2);
+        insertMovie(testMovie3);
+        */
+        //Movie testMovie1 = new Movie("Blade Runner", 1982);
+        db.movieDao().deleteAll("Blade Runner");
+        //Movie[] testGet = getMovie("Blade Runner");
+
+
+       // db.movieDao().insertMovie(testMovie);
+
+        //Movie temp = db.movieDao().findByTitle("Blade Runner");
+        //movieText.setText(temp.title);
+
+
 
         //If there is no movie, create a new one
         if(currentMovie == null) {
@@ -65,14 +105,25 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             //Restore movie
-            currentMovie = savedInstanceState.getParcelable(MOVIE_KEY);
+            //currentMovie = savedInstanceState.getParcelable(MOVIE_KEY);
         }
+
+    }
+
+    //Insert movie into database
+    private void insertMovie(Movie movie) {
+        new Thread(() -> db.movieDao().insertMovie(movie)).start();
+    }
+
+    //Delete a movie from database
+    private void deleteMovie(Movie movie) {
+        new Thread(() -> db.movieDao().deleteMovie(movie)).start();
     }
 
     @Override
     public void onSaveInstanceState(Bundle saveInstanceState)  {
         super.onSaveInstanceState(saveInstanceState);
-        saveInstanceState.putParcelable(MOVIE_KEY, currentMovie);
+        //saveInstanceState.putParcelable(MOVIE_KEY, currentMovie);
     }
 
     private String getImdbID() {
@@ -86,7 +137,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Use The Movie Database API to get a random movie (OMDbapi.com)
         String APIkey = "9297e7";
-        //Call movie APITextView welcomeText = findViewById(R.id.welcomeText);
 
         //Get movies from the OMDb API
         //TODO only use completely random if user has no preference
@@ -99,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 //TODO: Handle response
-                Log.e("Rest response", response.toString());
+                Log.e("Data:", response.toString());
 
                 try {
 
@@ -108,17 +158,15 @@ public class MainActivity extends AppCompatActivity {
                     String country = response.getString("Country");
                     int releaseYear = Integer.parseInt(response.getString("Year"));
 
-                    /*
-                    currentMovie.setTitle(title);
-                    currentMovie.setDescription(description);
-                    currentMovie.setReleaseYear(releaseYear);
-                    currentMovie.setCountry(country);
-                    */
+                    currentMovie.title = title;
+                    currentMovie.description = description;
+                    currentMovie.releaseYear = releaseYear;
+                    currentMovie.country = country;
 
                     movieText.setText(title + " (" + releaseYear + ")");
 
                 } catch (JSONException e) {
-                    //TODO ADD WARNING?
+                    System.out.println(e);
                 }
 
             }
@@ -154,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_importList:
-                //Import CSV file to SQLite database
+                //Import CSV file to database
 
             default:
                 // If we got here, the user's action was not recognized.
@@ -172,6 +220,10 @@ public class MainActivity extends AppCompatActivity {
     private void goToProfileActivity() {
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
+    }
+
+    private void goToListActivity() {
+        //Go to list activity
     }
 
 

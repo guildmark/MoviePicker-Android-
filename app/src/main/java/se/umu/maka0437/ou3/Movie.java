@@ -11,7 +11,20 @@ import androidx.room.PrimaryKey;
 @Entity
 public class Movie {
 
-    @PrimaryKey
+    public Movie() {
+        title = "";
+        description = "";
+        country = "";
+        releaseYear = 0;
+        runTime = 0;
+    }
+
+    public Movie(String name, int year) {
+        title = name;
+        releaseYear = year;
+    }
+
+    @PrimaryKey(autoGenerate = true)
     public int uid;
 
     @ColumnInfo(name = "title")
