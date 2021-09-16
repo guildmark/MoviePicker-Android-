@@ -7,8 +7,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
 import androidx.room.Room;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.util.Log;
@@ -26,6 +30,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.gson.JsonIOException;
 
 import org.json.JSONException;
@@ -37,12 +44,14 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MainActivity extends AppCompatActivity {
 
     public static final String MOVIE_KEY = "MOVIE_KEY";
-    TextView welcomeText;
-    TextView movieText;
+    TextView welcomeText, movieText, positionText;
     Movie currentMovie;
     ImageView startImage;
     AppDatabase db;
     public LiveData<List<Movie>> movies;
+    Position currentPos;
+
+    private FusedLocationProviderClient fusedLocationProviderClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +75,43 @@ public class MainActivity extends AppCompatActivity {
                 int random = ThreadLocalRandom.current().nextInt(0,3);
                 movieText.setText(currentMovies.get(random).title);
                 //Check to see if database is working
+            }
+        });
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        positionText = findViewById(R.id.posText);
+
+        Button getPositionButton = findViewById(R.id.posButton);
+        getPositionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Get position for viewer and display
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    //Check for the permission
+                    if(getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                        //Get location
+                        fusedLocationProviderClient.getLastLocation()
+                                .addOnSuccessListener(new OnSuccessListener<Location>() {
+                                    @Override
+                                    public void onSuccess(Location location) {
+                                        if(location != null) {
+                                            Double latitude = location.getLatitude();
+                                            Double longitude = location.getLongitude();
+
+                                            currentPos.setLatitude(latitude);
+                                            currentPos.setLongitude(longitude);
+
+                                            positionText.setText("POSITION: " + latitude + " " + longitude);
+                                        }
+                                    }
+                                });
+                    }
+                }
+                else {
+                    //If there is no permission, ask the user for it
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                }
             }
         });
 
@@ -109,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
 
     //Insert movie into database
     private void insertMovie(Movie movie) {
@@ -203,6 +250,8 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.action_importList:
                 //Import CSV file to database
+                goToListActivity();
+                return true;
 
             default:
                 // If we got here, the user's action was not recognized.
@@ -224,6 +273,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void goToListActivity() {
         //Go to list activity
+        Intent intent = new Intent(this, ListActivity.class);
+        startActivity(intent);
     }
 
 
