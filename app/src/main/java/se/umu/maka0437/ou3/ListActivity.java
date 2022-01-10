@@ -2,6 +2,7 @@ package se.umu.maka0437.ou3;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -17,29 +18,38 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ListActivity extends AppCompatActivity {
 
-    Button importList;
+    Button importListButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
-        importList = findViewById(R.id.importListButton);
-        importList.setOnClickListener(new View.OnClickListener() {
+        importListButton = findViewById(R.id.importListButton);
+        importListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                importList("WATCHLIST");
+                try {
+                    importList("WATCHLIST");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
 
     //Function to import list from a CSV file to database
-    private void importList(String fileName) {
+    private void importList(String fileName) throws IOException {
 
         /*
         InputStream inStream = getResources().openRawResource(R.raw.watchlist);
@@ -49,32 +59,25 @@ public class ListActivity extends AppCompatActivity {
         String csvFileString = this.getApplicationInfo().dataDir + File.separatorChar
                 + "WATCHLIST.csv";
 
-                //Environment.getExternalStorageDirectory() + "/csvfile.csv"
-        try{
-            //Get the correct CSV file to import
+        //String textfile = convertStreamToString(is);
 
+        try {
 
-            String filePath = "android.resource://" + getPackageName() + "/" + R.raw.watchlist;
-            File listFile = new File("watchlist.csv");
-            String fileAbsPath = listFile.getAbsolutePath();
-            String fileCanonicalPath = listFile.getCanonicalPath();
+            InputStreamReader is = new InputStreamReader(getAssets().open("WATCHLIST.csv"));
+            CSVReader csvReader = new CSVReader(is);
+            String[] line;
+            ArrayList<String[]> movieList = new ArrayList<String[]>();
 
-            CSVReader csvReader = new CSVReader(new FileReader(listFile));
+            csvReader.readNext();
 
-            String[] nextLine;
-            //List<String[]> allData = csvReader.readAll();
+            while((line = csvReader.readNext()) != null) {
+                //Add the CSV elements to the database
+                movieList.add(line);
 
-            //While we keep reading from the file
-            while((nextLine = csvReader.readNext()) != null) {
-                System.out.println(nextLine[0]);
-                System.out.println(nextLine[1]);
-                System.out.println(nextLine[2]);
-
-                //Add the data to local database
             }
 
 
-        } catch (IOException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
             Toast.makeText(this, "The specified file was not found", Toast.LENGTH_SHORT).show();
         }

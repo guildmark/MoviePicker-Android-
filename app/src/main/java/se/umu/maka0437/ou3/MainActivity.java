@@ -1,7 +1,5 @@
 package se.umu.maka0437.ou3;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
@@ -11,10 +9,8 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,12 +24,10 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.gson.JsonIOException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -65,22 +59,26 @@ public class MainActivity extends AppCompatActivity {
         movieText = findViewById(R.id.movieText);
         startImage = findViewById(R.id.startImage);
 
-        Button movieButton = findViewById(R.id.findMovieBytton);
+        Button movieButton = findViewById(R.id.findMovieButton);
         movieButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Find a specific movie
-                //getMovie();
+                getMovie();
+                /*
                 List<Movie> currentMovies = db.movieDao().getAll();
                 int random = ThreadLocalRandom.current().nextInt(0,3);
                 movieText.setText(currentMovies.get(random).title);
+                */
                 //Check to see if database is working
+
             }
         });
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        positionText = findViewById(R.id.posText);
+        //positionText = findViewById(R.id.posText);
 
+        /*
         Button getPositionButton = findViewById(R.id.posButton);
         getPositionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,8 +94,8 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void onSuccess(Location location) {
                                         if(location != null) {
-                                            Double latitude = location.getLatitude();
-                                            Double longitude = location.getLongitude();
+                                            double latitude = location.getLatitude();
+                                            double longitude = location.getLongitude();
 
                                             currentPos.setLatitude(latitude);
                                             currentPos.setLongitude(longitude);
@@ -114,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        */
+
 
         //Create database if not previously done
         if(db == null) {
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                     .build();
         }
 
-        /*
+        //Insert test movies
         Movie testMovie1 = new Movie("Blade Runner", 1982);
         Movie testMovie2 = new Movie("Ben Hur", 1959);
         Movie testMovie3 = new Movie("The Snake Pit", 1949);
@@ -132,9 +132,9 @@ public class MainActivity extends AppCompatActivity {
         insertMovie(testMovie1);
         insertMovie(testMovie2);
         insertMovie(testMovie3);
-        */
+
         //Movie testMovie1 = new Movie("Blade Runner", 1982);
-        db.movieDao().deleteAll("Blade Runner");
+        //db.movieDao().deleteAll("Blade Runner");
         //Movie[] testGet = getMovie("Blade Runner");
 
 
@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity {
 
         int random = ThreadLocalRandom.current().nextInt(1000000, 1999999);
         String ID = "tt" + random;
+        //Add more criteria? Find good API
         return ID;
     }
 
