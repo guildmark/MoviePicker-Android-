@@ -1,7 +1,9 @@
 package se.umu.maka0437.ou3;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Environment;
@@ -26,14 +28,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
+
 public class ListActivity extends AppCompatActivity {
 
+    public static final String MOVIEARRAY_KEY = "se.umu.maka0437.ou1.movie_key";
+
     Button importListButton;
+    ArrayList<String[]> movieList = new ArrayList<String[]>();
+
+
+    /*
+    AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+            AppDatabase.class, "movieDB").build();
+    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
+
+
 
         importListButton = findViewById(R.id.importListButton);
         importListButton.setOnClickListener(new View.OnClickListener() {
@@ -66,7 +81,6 @@ public class ListActivity extends AppCompatActivity {
             InputStreamReader is = new InputStreamReader(getAssets().open("WATCHLIST.csv"));
             CSVReader csvReader = new CSVReader(is);
             String[] line;
-            ArrayList<String[]> movieList = new ArrayList<String[]>();
 
             csvReader.readNext();
 
@@ -76,11 +90,21 @@ public class ListActivity extends AppCompatActivity {
 
             }
 
+            //Send parcel back to main activity with data
+            goToMainActivity();
+
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Toast.makeText(this, "The specified file was not found", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private void goToMainActivity() {
+        //Create new intent and go to activity
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(MOVIEARRAY_KEY, movieList);
+        startActivity(intent);
     }
 }

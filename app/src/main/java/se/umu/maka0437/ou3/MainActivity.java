@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -28,16 +29,24 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.opencsv.CSVReader;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String MOVIE_KEY = "MOVIE_KEY";
+
+    ArrayList<String[]> movieList = new ArrayList<String[]>();
     TextView welcomeText, movieText, positionText;
     Movie currentMovie;
     ImageView startImage;
@@ -72,6 +81,19 @@ public class MainActivity extends AppCompatActivity {
                 */
                 //Check to see if database is working
 
+            }
+        });
+
+        //Import CSV file and add movies to database
+        Button csvButton = findViewById(R.id.CSVbutton);
+        csvButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    importList("WATCHLIST.csv");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -156,6 +178,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    //Use when coming back from other activites
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //Add imported movies to database
+        Intent intent = getIntent();
+        //movieList = intent.getStringArrayExtra();
+
+    }
 
     //Insert movie into database
     private void insertMovie(Movie movie) {
@@ -278,6 +310,44 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+
+    //Function to import list from a CSV file to database
+    private void importList(String fileName) throws IOException {
+
+        /*
+        InputStream inStream = getResources().openRawResource(R.raw.watchlist);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inStream, Charset.forName("UTF-8")));
+        String line = "";
+        */
+        String csvFileString = this.getApplicationInfo().dataDir + File.separatorChar
+                + "WATCHLIST.csv";
+
+        //String textfile = convertStreamToString(is);
+
+        try {
+
+            InputStreamReader is = new InputStreamReader(getAssets().open("WATCHLIST.csv"));
+            CSVReader csvReader = new CSVReader(is);
+            String[] line;
+
+            csvReader.readNext();
+
+            while((line = csvReader.readNext()) != null) {
+                //Add the CSV elements to the database
+                movieList.add(line);
+
+            }
+
+            //Send parcel back to main activity with data
+            //goToMainActivity();
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "The specified file was not found", Toast.LENGTH_SHORT).show();
+        }
+
+    }
 
 
 }

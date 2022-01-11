@@ -4,6 +4,7 @@
     <string name="action_filter">Filter</string>
     <string name="action_importList">Import CSV file</string>
     <string name="movie_button">Find movie</string>
+    <string name="csv_button">Import CSV</string>
     <string name="welcome_text">MOVIEPICKER</string>
     <string name="import_list">IMPORT LIST</string>
 </resources>

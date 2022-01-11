@@ -1,0 +1,5 @@
+MOVIEPICKER - Notes
+
+1. Need to be able to choose where to get the data from as well as filtering it.
+	1.1. Importing CSV file, using external API etc. Need an option for this that is clear to see.
+	1.2. Interaction needs to be clean, try different 2-3 iterations for each big feature.
