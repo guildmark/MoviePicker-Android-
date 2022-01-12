@@ -19,10 +19,17 @@ public class Movie {
         runTime = 0;
     }
 
-    public Movie(String name, int year) {
+    public Movie(String name, int year, int time, String genre) {
         title = name;
         releaseYear = year;
+        this.runTime = time;
+        this.genre = genre;
+        /*
+        description = desc;
+        country = land;
+        */
     }
+
 
     @PrimaryKey(autoGenerate = true)
     public int uid;
@@ -42,5 +49,7 @@ public class Movie {
     @ColumnInfo(name = "country")
     public String country;
 
+    @ColumnInfo(name = "genre")
+    public String genre;
 
 }

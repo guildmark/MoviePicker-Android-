@@ -29,8 +29,8 @@ public interface MovieDao {
     @Delete
     void deleteMovie(Movie movie);
 
-    @Query("DELETE FROM movie WHERE title LIKE :title")
-    void deleteAll(String title);
+    @Query("DELETE FROM movie")
+    void deleteAll();
 
     @Insert
     void insertAll(Movie... movies);

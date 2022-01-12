@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //Find a specific movie
-                getMovie();
+                getMovieDB();
                 /*
                 List<Movie> currentMovies = db.movieDao().getAll();
                 int random = ThreadLocalRandom.current().nextInt(0,3);
@@ -147,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         //Insert test movies
+        /*
         Movie testMovie1 = new Movie("Blade Runner", 1982);
         Movie testMovie2 = new Movie("Ben Hur", 1959);
         Movie testMovie3 = new Movie("The Snake Pit", 1949);
@@ -154,6 +155,8 @@ public class MainActivity extends AppCompatActivity {
         insertMovie(testMovie1);
         insertMovie(testMovie2);
         insertMovie(testMovie3);
+        */
+
 
         //Movie testMovie1 = new Movie("Blade Runner", 1982);
         //db.movieDao().deleteAll("Blade Runner");
@@ -213,7 +216,11 @@ public class MainActivity extends AppCompatActivity {
         return ID;
     }
 
-    private void getMovie() {
+    private void getMovieDB() {
+        //Get a random movie from the current database and display it on screen
+        
+    }
+    private void getMovieAPI() {
 
         //Use The Movie Database API to get a random movie (OMDbapi.com)
         String APIkey = "9297e7";
@@ -314,15 +321,8 @@ public class MainActivity extends AppCompatActivity {
     //Function to import list from a CSV file to database
     private void importList(String fileName) throws IOException {
 
-        /*
-        InputStream inStream = getResources().openRawResource(R.raw.watchlist);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inStream, Charset.forName("UTF-8")));
-        String line = "";
-        */
         String csvFileString = this.getApplicationInfo().dataDir + File.separatorChar
                 + "WATCHLIST.csv";
-
-        //String textfile = convertStreamToString(is);
 
         try {
 
@@ -335,11 +335,20 @@ public class MainActivity extends AppCompatActivity {
             while((line = csvReader.readNext()) != null) {
                 //Add the CSV elements to the database
                 movieList.add(line);
+                //Get relevant movie data -- Below is specifically CSV from imdb
+                String name = line[5];
+                int year = Integer.parseInt(line[10]);
+                int runTime = Integer.parseInt(line[9]);
+                String genre = line[11];
+                String directors = line[14];
 
+                Movie movie = new Movie(name, year, runTime, genre);
+                insertMovie(movie);
             }
 
             //Send parcel back to main activity with data
             //goToMainActivity();
+
 
 
         } catch (FileNotFoundException e) {
@@ -347,6 +356,11 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "The specified file was not found", Toast.LENGTH_SHORT).show();
         }
 
+    }
+
+    private void addToDB(ArrayList<String[]> movieList) {
+
+        //For each movie, add to database with same values
     }
 
 
