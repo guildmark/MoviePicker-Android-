@@ -15,6 +15,9 @@ public interface MovieDao {
     @Query("SELECT * FROM movie")
     List<Movie> getAll();
 
+    @Query("SELECT * FROM movie ORDER BY RANDOM() LIMIT 1")
+    Movie getRandomMovie();
+
     //Get all movies by country
     @Query("SELECT * FROM movie WHERE country LIKE :country")
     List<Movie> findByCountry(String country);

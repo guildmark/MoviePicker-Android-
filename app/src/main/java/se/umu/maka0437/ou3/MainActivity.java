@@ -192,6 +192,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private Movie getRandomMovie() {
+        Movie movie = new Movie();
+        movie = db.movieDao().getRandomMovie();
+
+        return movie;
+    }
+
     //Insert movie into database
     private void insertMovie(Movie movie) {
         new Thread(() -> db.movieDao().insertMovie(movie)).start();
@@ -218,7 +225,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void getMovieDB() {
         //Get a random movie from the current database and display it on screen
-        
+        Movie movie = new Movie();
+        movie = getRandomMovie();
+
+        movieText.setText(movie.title + " (" + movie.releaseYear + ")");
+
     }
     private void getMovieAPI() {
 

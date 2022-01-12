@@ -20,8 +20,8 @@ public class Movie {
     }
 
     public Movie(String name, int year, int time, String genre) {
-        title = name;
-        releaseYear = year;
+        this.title = name;
+        this.releaseYear = year;
         this.runTime = time;
         this.genre = genre;
         /*
