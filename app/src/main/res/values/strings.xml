@@ -7,4 +7,5 @@
     <string name="csv_button">Import CSV</string>
     <string name="welcome_text">MOVIEPICKER</string>
     <string name="import_list">IMPORT LIST</string>
+    <string name="genre_text">Genre</string>
 </resources>

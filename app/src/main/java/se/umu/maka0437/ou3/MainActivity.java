@@ -9,6 +9,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String MOVIE_KEY = "MOVIE_KEY";
 
     ArrayList<String[]> movieList = new ArrayList<String[]>();
-    TextView welcomeText, movieText, positionText;
+    TextView welcomeText, movieText, positionText, genreText;
     Movie currentMovie;
     ImageView startImage;
     AppDatabase db;
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
         welcomeText = findViewById(R.id.welcomeText);
         movieText = findViewById(R.id.movieText);
         startImage = findViewById(R.id.startImage);
+        genreText = findViewById(R.id.genreText);
 
         Button movieButton = findViewById(R.id.findMovieButton);
         movieButton.setOnClickListener(new View.OnClickListener() {
@@ -146,30 +148,6 @@ public class MainActivity extends AppCompatActivity {
                     .build();
         }
 
-        //Insert test movies
-        /*
-        Movie testMovie1 = new Movie("Blade Runner", 1982);
-        Movie testMovie2 = new Movie("Ben Hur", 1959);
-        Movie testMovie3 = new Movie("The Snake Pit", 1949);
-
-        insertMovie(testMovie1);
-        insertMovie(testMovie2);
-        insertMovie(testMovie3);
-        */
-
-
-        //Movie testMovie1 = new Movie("Blade Runner", 1982);
-        //db.movieDao().deleteAll("Blade Runner");
-        //Movie[] testGet = getMovie("Blade Runner");
-
-
-       // db.movieDao().insertMovie(testMovie);
-
-        //Movie temp = db.movieDao().findByTitle("Blade Runner");
-        //movieText.setText(temp.title);
-
-
-
         //If there is no movie, create a new one
         if(currentMovie == null) {
             currentMovie = new Movie();
@@ -190,13 +168,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = getIntent();
         //movieList = intent.getStringArrayExtra();
 
-    }
-
-    private Movie getRandomMovie() {
-        Movie movie = new Movie();
-        movie = db.movieDao().getRandomMovie();
-
-        return movie;
     }
 
     //Insert movie into database
@@ -226,9 +197,12 @@ public class MainActivity extends AppCompatActivity {
     private void getMovieDB() {
         //Get a random movie from the current database and display it on screen
         Movie movie = new Movie();
-        movie = getRandomMovie();
+        movie = db.movieDao().getRandomMovie();
+        String description = getImdbID();
 
         movieText.setText(movie.title + " (" + movie.releaseYear + ")");
+        genreText.setText(movie.genre);
+
 
     }
     private void getMovieAPI() {
@@ -301,7 +275,10 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.action_importList:
                 //Import CSV file to database
-                goToListActivity();
+                //goToListActivity();
+
+                //openFile();
+                //Let user choose their own file to import
                 return true;
 
             default:
@@ -347,13 +324,14 @@ public class MainActivity extends AppCompatActivity {
                 //Add the CSV elements to the database
                 movieList.add(line);
                 //Get relevant movie data -- Below is specifically CSV from imdb
+                String description = line[4];
                 String name = line[5];
                 int year = Integer.parseInt(line[10]);
                 int runTime = Integer.parseInt(line[9]);
                 String genre = line[11];
                 String directors = line[14];
 
-                Movie movie = new Movie(name, year, runTime, genre);
+                Movie movie = new Movie(name, year, runTime, genre, description);
                 insertMovie(movie);
             }
 
@@ -374,5 +352,18 @@ public class MainActivity extends AppCompatActivity {
         //For each movie, add to database with same values
     }
 
+    /*
+    // Request code for selecting a PDF document.
+    private static final int PICK_CSV_FILE = 2;
+
+    private void openFile(Uri pickerInitialUri) {
+
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("text/csv");
+
+        startActivityForResult(intent, PICK_CSV_FILE);
+    }
+    */
 
 }

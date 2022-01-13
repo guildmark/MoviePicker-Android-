@@ -19,15 +19,12 @@ public class Movie {
         runTime = 0;
     }
 
-    public Movie(String name, int year, int time, String genre) {
+    public Movie(String name, int year, int time, String genre, String description) {
         this.title = name;
         this.releaseYear = year;
         this.runTime = time;
         this.genre = genre;
-        /*
-        description = desc;
-        country = land;
-        */
+        this.description = description;
     }
 
 
@@ -51,5 +48,7 @@ public class Movie {
 
     @ColumnInfo(name = "genre")
     public String genre;
+
+
 
 }
