@@ -5,4 +5,9 @@ MOVIEPICKER - Notes
 	1.2. Interaction needs to be clean, try different 2-3 iterations for each big feature
 
 2. Exporting CSV from imdb doesnt give the movie plot, but the omdbapi does. To make this work as well as possible, the
-app will only support CSV in the format that IMDB exports in, since missing info from the file will be collected from the OMDB RESTful API..
+app will only support CSV in the format that IMDB exports in, since missing info from the file will be collected from the OMDB RESTful API.
+
+3. App needs to focus in accessibility for people with disabilities, and should follow the guidelines from WCC and
+Android in terms of usability and design.
+
+.
