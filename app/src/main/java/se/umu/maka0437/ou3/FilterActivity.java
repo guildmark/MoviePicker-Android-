@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-public class FilterActivity extends AppCompatActivity {
+public class FilterActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

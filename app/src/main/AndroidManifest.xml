@@ -15,7 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ListActivity"></activity>
+        <activity
+            android:name=".BaseActivity"
+            android:exported="false" />
+        <activity android:name=".ListActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".FilterActivity" />
         <activity android:name=".MainActivity">

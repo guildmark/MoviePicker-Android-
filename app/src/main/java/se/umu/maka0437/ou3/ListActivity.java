@@ -30,7 +30,7 @@ import java.util.List;
 
 
 
-public class ListActivity extends AppCompatActivity {
+public class ListActivity extends BaseActivity {
 
     public static final String MOVIEARRAY_KEY = "se.umu.maka0437.ou1.movie_key";
 

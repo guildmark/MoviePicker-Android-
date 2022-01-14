@@ -10,4 +10,4 @@ app will only support CSV in the format that IMDB exports in, since missing info
 3. App needs to focus in accessibility for people with disabilities, and should follow the guidelines from WCC and
 Android in terms of usability and design.
 
-.
+4. Use 1 custom activity for tab bar / toolbar and then let other activies inherit these..

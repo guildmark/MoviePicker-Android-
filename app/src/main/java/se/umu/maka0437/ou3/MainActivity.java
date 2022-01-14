@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     public static final String MOVIE_KEY = "MOVIE_KEY";
 
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar appBar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(appBar);
 
-        welcomeText = findViewById(R.id.welcomeText);
+        //welcomeText = findViewById(R.id.welcomeText);
         movieText = findViewById(R.id.movieText);
         startImage = findViewById(R.id.startImage);
         genreText = findViewById(R.id.genreText);
