@@ -9,7 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 //Base activity that has the app bar and tab bar
-public class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,57 +18,5 @@ public class BaseActivity extends AppCompatActivity {
 
         Toolbar appBar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(appBar);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.appbarmenu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_filter:
-                // User chose the "Settings" item, show the app settings UI...
-                goToFilterActivity();
-                return true;
-
-            case R.id.action_profile:
-                // User chose the "Favorite" action, mark the current item
-                // as a favorite...
-                goToProfileActivity();
-                return true;
-
-            case R.id.action_importList:
-                //Import CSV file to database
-                //goToListActivity();
-
-                //openFile();
-                //Let user choose their own file to import
-                return true;
-
-            default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                return super.onOptionsItemSelected(item);
-
-        }
-    }
-
-    private void goToFilterActivity() {
-        Intent intent = new Intent(this, FilterActivity.class);
-        startActivity(intent);
-    }
-
-    private void goToProfileActivity() {
-        Intent intent = new Intent(this, ProfileActivity.class);
-        startActivity(intent);
-    }
-
-    private void goToListActivity() {
-        //Go to list activity
-        Intent intent = new Intent(this, ListActivity.class);
-        startActivity(intent);
     }
 }

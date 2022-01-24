@@ -43,16 +43,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends ToolbarActivity {
 
     public static final String MOVIE_KEY = "MOVIE_KEY";
+    public static final String GENRE_KEY = "GENRE_KEY";
 
     ArrayList<String[]> movieList = new ArrayList<String[]>();
     TextView welcomeText, movieText, positionText, genreText;
     Movie currentMovie;
     ImageView startImage;
     AppDatabase db;
-    public LiveData<List<Movie>> movies;
     Position currentPos;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -69,6 +69,14 @@ public class MainActivity extends BaseActivity {
         movieText = findViewById(R.id.movieText);
         startImage = findViewById(R.id.startImage);
         genreText = findViewById(R.id.genreText);
+
+        //Get back state
+        if(savedInstanceState != null) {
+            currentMovie = savedInstanceState.getParcelable(MOVIE_KEY);
+            //Set correct texts
+            movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");
+            genreText.setText(currentMovie.genre);
+        }
 
         Button movieButton = findViewById(R.id.findMovieButton);
         movieButton.setOnClickListener(new View.OnClickListener() {
@@ -92,7 +100,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    importList("WATCHLIST.csv");
+                    importCSV("WATCHLIST.csv");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -154,8 +162,11 @@ public class MainActivity extends BaseActivity {
         }
         else {
             //Restore movie
-            //currentMovie = savedInstanceState.getParcelable(MOVIE_KEY);
+            currentMovie = savedInstanceState.getParcelable(MOVIE_KEY);
         }
+
+        //Save condition on recreation / rotate etc
+
 
     }
 
@@ -183,7 +194,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onSaveInstanceState(Bundle saveInstanceState)  {
         super.onSaveInstanceState(saveInstanceState);
-        //saveInstanceState.putParcelable(MOVIE_KEY, currentMovie);
+        saveInstanceState.putParcelable(MOVIE_KEY, currentMovie);
     }
 
     private String getImdbID() {
@@ -196,15 +207,19 @@ public class MainActivity extends BaseActivity {
 
     private void getMovieDB() {
         //Get a random movie from the current database and display it on screen
+        /*
         Movie movie = new Movie();
         movie = db.movieDao().getRandomMovie();
+        */
+        currentMovie = db.movieDao().getRandomMovie();
         String description = getImdbID();
 
-        movieText.setText(movie.title + " (" + movie.releaseYear + ")");
-        genreText.setText(movie.genre);
-
+        movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");
+        genreText.setText(currentMovie.genre);
 
     }
+
+
     private void getMovieAPI() {
 
         //Use The Movie Database API to get a random movie (OMDbapi.com)
@@ -307,7 +322,7 @@ public class MainActivity extends BaseActivity {
 
 
     //Function to import list from a CSV file to database
-    private void importList(String fileName) throws IOException {
+    private void importCSV(String fileName) throws IOException {
 
         String csvFileString = this.getApplicationInfo().dataDir + File.separatorChar
                 + "WATCHLIST.csv";

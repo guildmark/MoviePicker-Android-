@@ -10,4 +10,7 @@ app will only support CSV in the format that IMDB exports in, since missing info
 3. App needs to focus in accessibility for people with disabilities, and should follow the guidelines from WCC and
 Android in terms of usability and design.
 
-4. Use 1 custom activity for tab bar / toolbar and then let other activies inherit these..
+4. Use 1 custom activity for tab bar / toolbar and then let other activies inherit these.
+
+5. Dont use copyrighted images of movies, but instead free icons representing the genre of the movie! (Also remember
+to credit the author for each icon!).

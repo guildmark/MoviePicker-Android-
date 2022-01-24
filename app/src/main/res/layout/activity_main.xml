@@ -21,15 +21,15 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.768" />
+        app:layout_constraintVertical_bias="0.539" />
 
     <ImageView
         android:id="@+id/startImage"
-        android:layout_width="764dp"
-        android:layout_height="789dp"
+        android:layout_width="520dp"
+        android:layout_height="513dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription='Picture from "Gone with the wind" with Vivien Leigh and Hattie McDaniels'
+        android:layout_marginTop="4dp"
+        android:contentDescription="@string/start_image_desc"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/movie1" />
@@ -70,9 +70,9 @@
         android:text="@string/csv_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintHorizontal_bias="0.508"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.86" />
+        app:layout_constraintVertical_bias="0.667" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

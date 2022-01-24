@@ -9,7 +9,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity
-public class Movie {
+public class Movie implements Parcelable{
 
     public Movie() {
         title = "";
@@ -50,5 +50,41 @@ public class Movie {
     public String genre;
 
 
+    protected Movie(Parcel in) {
+        uid = in.readInt();
+        title = in.readString();
+        releaseYear = in.readInt();
+        runTime = in.readInt();
+        description = in.readString();
+        country = in.readString();
+        genre = in.readString();
+    }
 
+    public static final Creator<Movie> CREATOR = new Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        @Override
+        public Movie[] newArray(int size) {
+            return new Movie[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(uid);
+        dest.writeString(title);
+        dest.writeInt(releaseYear);
+        dest.writeInt(runTime);
+        dest.writeString(description);
+        dest.writeString(country);
+        dest.writeString(genre);
+    }
 }
