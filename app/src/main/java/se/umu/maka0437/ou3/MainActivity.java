@@ -47,6 +47,7 @@ public class MainActivity extends ToolbarActivity {
 
     public static final String MOVIE_KEY = "MOVIE_KEY";
     public static final String GENRE_KEY = "GENRE_KEY";
+    public static final String POS_KEY = "POS_KEY";
 
     ArrayList<String[]> movieList = new ArrayList<String[]>();
     TextView welcomeText, movieText, positionText, genreText;
@@ -69,10 +70,12 @@ public class MainActivity extends ToolbarActivity {
         movieText = findViewById(R.id.movieText);
         startImage = findViewById(R.id.startImage);
         genreText = findViewById(R.id.genreText);
+        positionText = findViewById(R.id.positionText);
 
         //Get back state
         if(savedInstanceState != null) {
             currentMovie = savedInstanceState.getParcelable(MOVIE_KEY);
+            currentPos = savedInstanceState.getParcelable(POS_KEY);
             //Set correct texts
             movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");
             genreText.setText(currentMovie.genre);
@@ -110,7 +113,7 @@ public class MainActivity extends ToolbarActivity {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         //positionText = findViewById(R.id.posText);
 
-        /*
+
         Button getPositionButton = findViewById(R.id.posButton);
         getPositionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,25 +129,27 @@ public class MainActivity extends ToolbarActivity {
                                     @Override
                                     public void onSuccess(Location location) {
                                         if(location != null) {
+
                                             double latitude = location.getLatitude();
                                             double longitude = location.getLongitude();
 
-                                            currentPos.setLatitude(latitude);
-                                            currentPos.setLongitude(longitude);
+                                            currentPos = new Position(latitude, longitude);
+                                            //currentPos.setLatitude(latitude);
+                                            //currentPos.setLongitude(longitude);
 
                                             positionText.setText("POSITION: " + latitude + " " + longitude);
                                         }
                                     }
                                 });
                     }
+                    else {
+                        //If there is no permission, ask the user for it
+                        requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+                    }
                 }
-                else {
-                    //If there is no permission, ask the user for it
-                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-                }
+
             }
         });
-        */
 
 
         //Create database if not previously done
@@ -194,7 +199,9 @@ public class MainActivity extends ToolbarActivity {
     @Override
     public void onSaveInstanceState(Bundle saveInstanceState)  {
         super.onSaveInstanceState(saveInstanceState);
+
         saveInstanceState.putParcelable(MOVIE_KEY, currentMovie);
+        saveInstanceState.putParcelable(POS_KEY, currentPos);
     }
 
     private String getImdbID() {

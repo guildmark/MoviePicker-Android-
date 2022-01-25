@@ -5,6 +5,7 @@
     <string name="action_importList">Import CSV file</string>
     <string name="movie_button">Find movie</string>
     <string name="csv_button">Import CSV</string>
+    <string name="pos_button">Get position</string>
     <string name="welcome_text">MOVIEPICKER</string>
     <string name="import_list">IMPORT LIST</string>
     <string name="genre_text">Genre</string>
