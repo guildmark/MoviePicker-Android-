@@ -52,7 +52,6 @@ public class MainActivity extends ToolbarActivity {
     ArrayList<String[]> movieList = new ArrayList<String[]>();
     TextView welcomeText, movieText, positionText, genreText;
     Movie currentMovie;
-    ImageView startImage;
     AppDatabase db;
     Position currentPos;
 
@@ -68,7 +67,6 @@ public class MainActivity extends ToolbarActivity {
 
         //welcomeText = findViewById(R.id.welcomeText);
         movieText = findViewById(R.id.movieText);
-        startImage = findViewById(R.id.startImage);
         genreText = findViewById(R.id.genreText);
         positionText = findViewById(R.id.positionText);
 
@@ -113,41 +111,13 @@ public class MainActivity extends ToolbarActivity {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         //positionText = findViewById(R.id.posText);
 
-
+        //Add temporary position button for testing
         Button getPositionButton = findViewById(R.id.posButton);
         getPositionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Get position for viewer and display
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    //Check for the permission
-                    if(getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                        //Get location
-                        fusedLocationProviderClient.getLastLocation()
-                                .addOnSuccessListener(new OnSuccessListener<Location>() {
-                                    @Override
-                                    public void onSuccess(Location location) {
-                                        if(location != null) {
-
-                                            double latitude = location.getLatitude();
-                                            double longitude = location.getLongitude();
-
-                                            currentPos = new Position(latitude, longitude);
-                                            //currentPos.setLatitude(latitude);
-                                            //currentPos.setLongitude(longitude);
-
-                                            positionText.setText("POSITION: " + latitude + " " + longitude);
-                                        }
-                                    }
-                                });
-                    }
-                    else {
-                        //If there is no permission, ask the user for it
-                        requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-                    }
-                }
-
+                getUserPosition();
             }
         });
 
@@ -368,24 +338,35 @@ public class MainActivity extends ToolbarActivity {
         }
 
     }
+    private void getUserPosition() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //Check for the permission
+            if(getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                //Get location
+                fusedLocationProviderClient.getLastLocation()
+                        .addOnSuccessListener(new OnSuccessListener<Location>() {
+                            @Override
+                            public void onSuccess(Location location) {
+                                if(location != null) {
 
-    private void addToDB(ArrayList<String[]> movieList) {
+                                    double latitude = location.getLatitude();
+                                    double longitude = location.getLongitude();
 
-        //For each movie, add to database with same values
+                                    currentPos = new Position(latitude, longitude);
+                                    //currentPos.setLatitude(latitude);
+                                    //currentPos.setLongitude(longitude);
+
+                                    positionText.setText("POSITION: " + latitude + " " + longitude);
+                                }
+                            }
+                        });
+            }
+            else {
+                //If there is no permission, ask the user for it
+                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+            }
+        }
     }
-
-    /*
-    // Request code for selecting a PDF document.
-    private static final int PICK_CSV_FILE = 2;
-
-    private void openFile(Uri pickerInitialUri) {
-
-        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("text/csv");
-
-        startActivityForResult(intent, PICK_CSV_FILE);
-    }
-    */
 
 }
