@@ -18,12 +18,22 @@ public interface MovieDao {
     @Query("SELECT * FROM movie ORDER BY RANDOM() LIMIT 1")
     Movie getRandomMovie();
 
+    //Get all movies by specific years, genres and country
+    @Query("SELECT * FROM movie WHERE releaseYear LIKE :year AND genre LIKE :genre AND country " +
+            "LIKE :country")
+    List<Movie> findByAll(int year, String genre, String country);
+
+
     //Get all movies by country
     @Query("SELECT * FROM movie WHERE country LIKE :country")
     List<Movie> findByCountry(String country);
 
+    //Get all movies by genre
+    @Query("SELECT * FROM movie WHERE genre LIKE :genre")
+    List<Movie> findByGenre(String genre);
+
     //Get all movies by year
-    @Query("SELECT * FROM movie WHERE releaseYear LIKE :year")
+    @Query("SELECT * FROM movie WHERE releaseYear > :year")
     List<Movie> findByYear(int year);
 
     @Query("SELECT * FROM movie WHERE title LIKE :title")

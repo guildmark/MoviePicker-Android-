@@ -1,11 +1,18 @@
 package se.umu.maka0437.ou3;
 
+import static se.umu.maka0437.ou3.FilterActivity.EXTRA_COUNTRY;
+import static se.umu.maka0437.ou3.FilterActivity.EXTRA_GENRE;
+import static se.umu.maka0437.ou3.FilterActivity.EXTRA_YEAR;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.LiveData;
 import androidx.room.Room;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -41,22 +48,39 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends ToolbarActivity {
 
-    public static final String MOVIE_KEY = "MOVIE_KEY";
-    public static final String GENRE_KEY = "GENRE_KEY";
-    public static final String POS_KEY = "POS_KEY";
+    private static final String MOVIE_KEY = "MOVIE_KEY";
+    private static final String GENRE_KEY = "GENRE_KEY";
+    private static final String POS_KEY = "POS_KEY";
 
     ArrayList<String[]> movieList = new ArrayList<String[]>();
     TextView welcomeText, movieText, positionText, genreText;
     Movie currentMovie;
     AppDatabase db;
     Position currentPos;
+    String currentGenre, currentCountry;
+    int currentYear;
+    String testYear;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
-    
+
+    //New way of starting a new activity for result
+    ActivityResultLauncher<Intent> startForResult=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),(it)-> {
+        if (it.getResultCode() == Activity.RESULT_OK) {
+            Intent intent=it.getData();
+            if (intent != null) {
+                //Get the current values from the filter
+                //testYear = intent.getStringExtra(EXTRA_YEAR);
+                currentYear = intent.getIntExtra(EXTRA_YEAR, 0);
+                currentGenre = intent.getStringExtra(EXTRA_GENRE);
+                currentCountry = intent.getStringExtra(EXTRA_COUNTRY);
+            }
+        }
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,6 +208,11 @@ public class MainActivity extends ToolbarActivity {
         Movie movie = new Movie();
         movie = db.movieDao().getRandomMovie();
         */
+
+        //Check if the user has chosen any filters
+        List<Movie> currentList = new ArrayList<Movie>();
+        currentList = db.movieDao().findByYear(currentYear);
+
         currentMovie = db.movieDao().getRandomMovie();
         String description = getImdbID();
 
@@ -279,7 +308,7 @@ public class MainActivity extends ToolbarActivity {
 
     private void goToFilterActivity() {
         Intent intent = new Intent(this, FilterActivity.class);
-        startActivity(intent);
+        startForResult.launch(intent);
     }
 
     private void goToProfileActivity() {

@@ -12,7 +12,11 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class FilterActivity extends BaseActivity implements AdapterView.OnItemSelectedListener {
+public class FilterActivity extends BaseActivity {
+
+    public static final String EXTRA_YEAR = "se.umu.maka0437.ou1.year";
+    public static final String EXTRA_GENRE = "se.umu.maka0437.ou1.genre";
+    public static final String EXTRA_COUNTRY = "se.umu.maka0437.ou1.country";
 
     public static String FILTER_COUNTRY = "FILTER_COUNTRY";
     public static String FILTER_GENRE = "FILTER_GENRE";
@@ -23,8 +27,14 @@ public class FilterActivity extends BaseActivity implements AdapterView.OnItemSe
     Button acceptButton;
     String genre, country;
     TextView showYear;
+    Boolean filterEnabled;
     int year;
     private static final String[] genreOptions = {"Drama", "SciFi", "Comedy", "Action"};
+
+
+
+    /*
+    remember implements AdapterView.OnItemSelectedListener
 
     //Functions for getting data from spinners
     public void onItemSelected(AdapterView<?> parent, View view,
@@ -46,7 +56,7 @@ public class FilterActivity extends BaseActivity implements AdapterView.OnItemSe
         // Another interface callback
 
     }
-
+    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +70,7 @@ public class FilterActivity extends BaseActivity implements AdapterView.OnItemSe
         showYear = findViewById(R.id.yearInNumber);
 
         showYear.setText(String.valueOf(yearSlider.getProgress()));
+        year = yearSlider.getProgress();
 
         //Set slider
         yearSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -87,7 +98,7 @@ public class FilterActivity extends BaseActivity implements AdapterView.OnItemSe
         acceptButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goToMain();
+                returnResult(year, genre, country);
             }
         });
 
@@ -105,6 +116,16 @@ public class FilterActivity extends BaseActivity implements AdapterView.OnItemSe
         startActivity(intent);
     }
 
+    //Function to return result to previous activity, getting total and what score its assigned to
+    private void returnResult(int year, String genre, String country) {
+        Intent intent = new Intent();
+        intent.putExtra(EXTRA_YEAR, year);
+        intent.putExtra(EXTRA_GENRE, genre);
+        intent.putExtra(EXTRA_COUNTRY, country);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
     private void setSpinners() {
 
         genreSpinner = findViewById(R.id.genreSpinner);
@@ -114,14 +135,8 @@ public class FilterActivity extends BaseActivity implements AdapterView.OnItemSe
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                 Object item = parent.getItemAtPosition(position);
-                if(item != null) {
-                    //Toast.makeText(FilterActivity.this, item.toString(), Toast.LENGTH_SHORT).show();
-                    genre = item.toString();
-                }
-                else {
-                    Toast.makeText(FilterActivity.this, "Selected",
-                            Toast.LENGTH_SHORT).show();
-                }
+                //Toast.makeText(FilterActivity.this, item.toString(), Toast.LENGTH_SHORT).show();
+                genre = item.toString();
             }
 
             @Override
@@ -157,11 +172,6 @@ public class FilterActivity extends BaseActivity implements AdapterView.OnItemSe
 
         genreSpinner.setAdapter(genreArrayAdapter);
         countrySpinner.setAdapter(countryArrayAdapter);
-
-
-
-
-        //
     }
 
 }
