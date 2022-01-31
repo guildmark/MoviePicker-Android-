@@ -9,7 +9,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity
-public class Movie implements Parcelable{
+public class Movie implements Parcelable {
 
     public Movie() {
         title = "";

@@ -56,6 +56,7 @@ public class MainActivity extends ToolbarActivity {
     Position currentPos;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
+    
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,13 +86,6 @@ public class MainActivity extends ToolbarActivity {
             public void onClick(View v) {
                 //Find a specific movie
                 getMovieDB();
-                /*
-                List<Movie> currentMovies = db.movieDao().getAll();
-                int random = ThreadLocalRandom.current().nextInt(0,3);
-                movieText.setText(currentMovies.get(random).title);
-                */
-                //Check to see if database is working
-
             }
         });
 
@@ -153,6 +147,8 @@ public class MainActivity extends ToolbarActivity {
         //Add imported movies to database
         Intent intent = getIntent();
         //movieList = intent.getStringArrayExtra();
+
+
 
     }
 
