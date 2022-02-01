@@ -15,7 +15,6 @@ public abstract class ToolbarActivity extends BaseActivity {
         setContentView(R.layout.activity_toolbar);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.appbarmenu, menu);

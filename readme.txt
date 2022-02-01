@@ -10,6 +10,7 @@ Criterias for MoviePicker:
 3. Uses a MVC design pattern.
 4. Has structured code with comments.
 5. Focus on accessibility
+6. Implements a simple login system with user authentication and password hashing.
 
 Features:
 
@@ -18,3 +19,4 @@ Features:
 . There should be a favorite-mode, where the user can save their favorites and only choose movies from that pile.
 . The app uses a SQLite database to store entries, but can also get the data from the OMDB RESTful API.
 . There is possibility to use a gesture to find movie instead of pressing the FIND-button.
+. Ability for user to save their choices in a profile view. 
