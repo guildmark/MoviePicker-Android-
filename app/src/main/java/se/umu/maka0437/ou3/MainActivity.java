@@ -212,8 +212,12 @@ public class MainActivity extends ToolbarActivity {
         //Check if the user has chosen any filters
         List<Movie> currentList = new ArrayList<Movie>();
         currentList = db.movieDao().findByYear(currentYear);
+        int randomInt = ThreadLocalRandom.current().nextInt(0, currentList.size());
+        currentMovie = currentList.get(randomInt);
+        //Get a random movie from that list and display it
 
-        currentMovie = db.movieDao().getRandomMovie();
+
+        //currentMovie = db.movieDao().getRandomMovie();
         String description = getImdbID();
 
         movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");

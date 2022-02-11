@@ -20,7 +20,7 @@ public interface MovieDao {
 
     //Get all movies by specific years, genres and country
     @Query("SELECT * FROM movie WHERE releaseYear > :year AND genre LIKE :genre")
-    List<Movie> findByAll(int year, String genre, String country);
+    List<Movie> findByAll(int year, String genre);
 
     //Get all movies by country
     @Query("SELECT * FROM movie WHERE country LIKE :country")
