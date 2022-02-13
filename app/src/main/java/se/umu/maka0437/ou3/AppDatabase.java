@@ -6,4 +6,5 @@ import androidx.room.RoomDatabase;
 @Database(entities = {Movie.class}, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract MovieDao movieDao();
+    //public abstract UserDao userDao();
 }

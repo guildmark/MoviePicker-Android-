@@ -302,6 +302,10 @@ public class MainActivity extends ToolbarActivity {
                 //Let user choose their own file to import
                 return true;
 
+            case R.id.action_register:
+                goToRegisterActivity();
+                return true;
+
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
@@ -312,11 +316,19 @@ public class MainActivity extends ToolbarActivity {
 
     private void goToFilterActivity() {
         Intent intent = new Intent(this, FilterActivity.class);
+        //Add current filter options so it doesn't reset all the time
+        intent.putExtra(EXTRA_YEAR, currentYear);
         startForResult.launch(intent);
     }
 
     private void goToProfileActivity() {
         Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
+    }
+
+    private void goToRegisterActivity() {
+        Intent intent = new Intent(this, RegisterActivity.class);
+
         startActivity(intent);
     }
 

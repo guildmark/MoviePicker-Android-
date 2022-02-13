@@ -1,8 +1,13 @@
 <resources>
     <string name="app_name">OU3</string>
+
     <string name="action_profile">Profile</string>
     <string name="action_filter">Filter</string>
     <string name="action_importList">Import CSV file</string>
+    <string name="action_register">Register</string>
+    <string name="action_login">Login</string>
+
+    <string name="register_user">Register User</string>
     <string name="movie_button">Find movie</string>
     <string name="csv_button">Import CSV</string>
     <string name="pos_button">Get position</string>

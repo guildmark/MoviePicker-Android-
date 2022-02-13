@@ -3,6 +3,9 @@ package se.umu.maka0437.ou3;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.Entity;
+
+@Entity
 public class User implements Parcelable {
 
     public User(String username, String password){}
