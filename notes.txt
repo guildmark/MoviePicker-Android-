@@ -13,4 +13,6 @@ Android in terms of usability and design.
 4. Use 1 custom activity for tab bar / toolbar and then let other activies inherit these.
 
 5. Dont use copyrighted images of movies, but instead free icons representing the genre of the movie! (Also remember
-to credit the author for each icon!).
+to credit the author for each icon!)
+
+6. Use Room db in one activity if need be? Filter, register and user login can divert to mainactivity and use parcels to send the data there. It's crucial for the Database to not be replicated needlessly, so a Singleton design pattern is to be used..

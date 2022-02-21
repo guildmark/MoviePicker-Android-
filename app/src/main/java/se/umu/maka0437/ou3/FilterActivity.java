@@ -14,9 +14,9 @@ import android.widget.Toast;
 
 public class FilterActivity extends BaseActivity {
 
-    public static final String EXTRA_YEAR = "se.umu.maka0437.ou1.year";
-    public static final String EXTRA_GENRE = "se.umu.maka0437.ou1.genre";
-    public static final String EXTRA_COUNTRY = "se.umu.maka0437.ou1.country";
+    public static final String EXTRA_YEAR = "se.umu.maka0437.ou3.year";
+    public static final String EXTRA_GENRE = "se.umu.maka0437.ou3.genre";
+    public static final String EXTRA_COUNTRY = "se.umu.maka0437.ou3.country";
 
     public static String FILTER_COUNTRY = "FILTER_COUNTRY";
     public static String FILTER_GENRE = "FILTER_GENRE";
@@ -103,17 +103,6 @@ public class FilterActivity extends BaseActivity {
         });
 
         //Use SharedPreferences for settings
-    }
-
-    private void goToMain() {
-        Intent intent = new Intent(this, MainActivity.class);
-
-        //Get all the saved values and go back to main function
-        intent.putExtra(FILTER_COUNTRY, country);
-        intent.putExtra(FILTER_YEAR, year);
-        intent.putExtra(FILTER_GENRE, genre);
-
-        startActivity(intent);
     }
 
     //Function to return result to previous activity, getting total and what score its assigned to

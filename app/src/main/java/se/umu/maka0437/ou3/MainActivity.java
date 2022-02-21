@@ -60,7 +60,9 @@ public class MainActivity extends ToolbarActivity {
     ArrayList<String[]> movieList = new ArrayList<String[]>();
     TextView welcomeText, movieText, positionText, genreText;
     Movie currentMovie;
+    //Need this room db to be globally accessible so that activities/fragments can access it!
     AppDatabase db;
+
     Position currentPos;
     String currentGenre, currentCountry;
     int currentYear;
@@ -211,9 +213,15 @@ public class MainActivity extends ToolbarActivity {
 
         //Check if the user has chosen any filters
         List<Movie> currentList = new ArrayList<Movie>();
-        currentList = db.movieDao().findByYear(currentYear);
-        int randomInt = ThreadLocalRandom.current().nextInt(0, currentList.size());
-        currentMovie = currentList.get(randomInt);
+
+        if(currentYear != 0) {
+            currentList = db.movieDao().findByYear(currentYear);
+            int randomInt = ThreadLocalRandom.current().nextInt(0, currentList.size());
+            currentMovie = currentList.get(randomInt);
+        }
+       else {
+            currentMovie = db.movieDao().getRandomMovie();
+        }
         //Get a random movie from that list and display it
 
 

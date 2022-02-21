@@ -3,16 +3,34 @@ package se.umu.maka0437.ou3;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 @Entity
 public class User implements Parcelable {
 
     public User(String username, String password){}
 
-    private String username;
-    private String password;
-    private String hashedPass;
+    @PrimaryKey
+    public int uid;
+
+    @ColumnInfo(name = "username")
+    public String username;
+
+    @ColumnInfo(name = "password")
+    public String password;
+
+    public String hashedPass;
 
     protected User(Parcel in) {
         username = in.readString();
@@ -51,5 +69,34 @@ public class User implements Parcelable {
         dest.writeString(username);
         dest.writeString(password);
         dest.writeString(hashedPass);
+    }
+
+    public String hashPassPBKDF2(String pass) {
+        byte[] hash;
+
+        //Create salt
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
+        SecretKeyFactory factory = null;
+        try {
+            //Change string?
+            factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (factory != null) {
+                hash = factory.generateSecret(spec).getEncoded();
+                //Get string of hashed password and return it
+                return new String(hash, StandardCharsets.UTF_8);
+            }
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        }
+    return null;
     }
 }
