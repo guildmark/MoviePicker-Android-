@@ -4,6 +4,9 @@
     <string name="action_profile">Profile</string>
     <string name="action_filter">Filter</string>
     <string name="action_importList">Import CSV file</string>
+    <string name="text_username">Username</string>
+    <string name="text_password">Password</string>
+    <string name="placeholder_pass">asdefgh12345</string>
     <string name="action_register">Register</string>
     <string name="action_login">Login</string>
 

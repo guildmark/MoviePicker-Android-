@@ -103,6 +103,8 @@ public class FilterActivity extends BaseActivity {
         });
 
         //Use SharedPreferences for settings
+
+        //Add savedinstancestate for rotating
     }
 
     //Function to return result to previous activity, getting total and what score its assigned to

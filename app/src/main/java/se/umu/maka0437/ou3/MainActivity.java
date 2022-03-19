@@ -3,6 +3,7 @@ package se.umu.maka0437.ou3;
 import static se.umu.maka0437.ou3.FilterActivity.EXTRA_COUNTRY;
 import static se.umu.maka0437.ou3.FilterActivity.EXTRA_GENRE;
 import static se.umu.maka0437.ou3.FilterActivity.EXTRA_YEAR;
+import static se.umu.maka0437.ou3.RegisterActivity.EXTRA_USER;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -67,6 +68,7 @@ public class MainActivity extends ToolbarActivity {
     String currentGenre, currentCountry;
     int currentYear;
     String testYear;
+    User currentUser;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -80,6 +82,7 @@ public class MainActivity extends ToolbarActivity {
                 currentYear = intent.getIntExtra(EXTRA_YEAR, 0);
                 currentGenre = intent.getStringExtra(EXTRA_GENRE);
                 currentCountry = intent.getStringExtra(EXTRA_COUNTRY);
+                currentUser = intent.getParcelableExtra(EXTRA_USER); //Get current user
             }
         }
     });
@@ -178,6 +181,14 @@ public class MainActivity extends ToolbarActivity {
 
     }
 
+    private void insertUser(User user) {
+        new Thread(() -> db.userDao().insertUser(user));
+    }
+
+    private void deleteUser(User user) {
+        new Thread(() -> db.userDao().deleteUser(user));
+    }
+
     //Insert movie into database
     private void insertMovie(Movie movie) {
         new Thread(() -> db.movieDao().insertMovie(movie)).start();
@@ -191,7 +202,6 @@ public class MainActivity extends ToolbarActivity {
     @Override
     public void onSaveInstanceState(Bundle saveInstanceState)  {
         super.onSaveInstanceState(saveInstanceState);
-
         saveInstanceState.putParcelable(MOVIE_KEY, currentMovie);
         saveInstanceState.putParcelable(POS_KEY, currentPos);
     }

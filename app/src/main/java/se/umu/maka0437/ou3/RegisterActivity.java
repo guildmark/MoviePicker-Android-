@@ -22,6 +22,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     public static final String EXTRA_USERNAME = "se.umu.maka0437.ou3.username";
     public static final String EXTRA_PASSWORD = "se.umu.maka0437.ou3.password";
+    public static final String EXTRA_USER = "se.umu.maka0437.ou3.user";
 
     User newUser;
     String username, password, hashedPass;
@@ -33,6 +34,12 @@ public class RegisterActivity extends AppCompatActivity {
 
         //Add listeners to user and pass inputs
         EditText userText = findViewById(R.id.userInput);
+        userText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userText.setText("");
+            }
+        });
         EditText passText = findViewById(R.id.passInput);
 
         //Add register button
@@ -43,6 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
                 //Insert viewer with hashed pass into database
                 //newUser = new User(username, password);
                 //db.userDao().insertUser(newUser);
+
                 username = userText.getText().toString();
                 //hash the password before sending it
                 password = hashPassPBKDF2(passText.getText().toString());
@@ -91,9 +99,13 @@ public class RegisterActivity extends AppCompatActivity {
     //Change this for return with result!
     private void goToMain() {
         //Fix with start for result
+
+        newUser.username = username;
+        newUser.password = password;
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra(EXTRA_USERNAME, username);
         intent.putExtra(EXTRA_PASSWORD, hashedPass);
+        intent.putExtra(EXTRA_USER, newUser);
         startActivity(intent);
     }
 }
