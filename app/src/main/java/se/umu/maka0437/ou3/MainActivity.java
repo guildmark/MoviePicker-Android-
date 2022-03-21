@@ -225,7 +225,8 @@ public class MainActivity extends ToolbarActivity {
         List<Movie> currentList = new ArrayList<Movie>();
 
         if(currentYear != 0) {
-            currentList = db.movieDao().findByYear(currentYear);
+            //currentList = db.movieDao().findByYear(currentYear);
+            currentList = db.movieDao().findByAll(currentYear, currentGenre);
             int randomInt = ThreadLocalRandom.current().nextInt(0, currentList.size());
             currentMovie = currentList.get(randomInt);
         }

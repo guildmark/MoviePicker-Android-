@@ -108,4 +108,13 @@ public class RegisterActivity extends AppCompatActivity {
         intent.putExtra(EXTRA_USER, newUser);
         startActivity(intent);
     }
+    /*
+    private void insertUser(User user) {
+        new Thread(() -> db.userDao().insertUser(user));
+    }
+
+    private void deleteUser(User user) {
+        new Thread(() -> db.userDao().deleteUser(user));
+    }
+    */
 }

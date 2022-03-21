@@ -15,8 +15,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:scaleX="2"
-        android:scaleY="2"
+        android:scaleX="1"
+        android:scaleY="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -30,8 +30,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:scaleX="2"
-        android:scaleY="2"
+        android:scaleX="1"
+        android:scaleY="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
@@ -94,14 +94,14 @@
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="226dp"
-        android:layout_height="314dp"
+        android:layout_width="162dp"
+        android:layout_height="230dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.133"
+        app:layout_constraintVertical_bias="0.125"
         app:srcCompat="@drawable/film_roll" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
