@@ -19,7 +19,7 @@ public interface MovieDao {
     Movie getRandomMovie();
 
     //Get all movies by specific years, genres and country
-    @Query("SELECT * FROM movie WHERE releaseYear > :year AND genre LIKE :genre")
+    @Query("SELECT * FROM movie WHERE releaseYear > :year AND genre LIKE '%' || :genre || '%'")
     List<Movie> findByAll(int year, String genre);
 
     //Get all movies by country

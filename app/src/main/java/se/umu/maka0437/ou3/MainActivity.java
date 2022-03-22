@@ -128,12 +128,14 @@ public class MainActivity extends ToolbarActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                Toast.makeText(MainActivity.this, "WATCHLIST imported!", Toast.LENGTH_SHORT).show();
             }
         });
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         //positionText = findViewById(R.id.posText);
 
+        /*
         //Add temporary position button for testing
         Button getPositionButton = findViewById(R.id.posButton);
         getPositionButton.setOnClickListener(new View.OnClickListener() {
@@ -143,6 +145,8 @@ public class MainActivity extends ToolbarActivity {
                 getUserPosition();
             }
         });
+
+         */
 
 
         //Create database if not previously done
