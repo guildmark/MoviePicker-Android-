@@ -19,12 +19,13 @@ public class Movie implements Parcelable {
         runTime = 0;
     }
 
-    public Movie(String name, int year, int time, String genre, String description) {
+    public Movie(String name, int year, int time, String genre, String description, String imdbID) {
         this.title = name;
         this.releaseYear = year;
         this.runTime = time;
         this.genre = genre;
         this.description = description;
+        this.imdbID = imdbID;
     }
 
 
@@ -33,6 +34,9 @@ public class Movie implements Parcelable {
 
     @ColumnInfo(name = "title")
     public String title;
+
+    @ColumnInfo(name = "imdbID")
+    public String imdbID;
 
     @ColumnInfo(name = "releaseYear")
     public int releaseYear;

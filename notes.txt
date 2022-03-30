@@ -1,5 +1,16 @@
 MOVIEPICKER - Notes
 
+
+PRIOLISTA:
+1. Fixa description från OMDB:s API.
+2. Fixa krasch när man försöker söka film med tom databas (thought i did but wups)
+3. Gör så man själv kan välja CSV fil.
+x. Singleton design pattern för room-objekt.
+
+
+
+
+------------
 1. Need to be able to choose where to get the data from as well as filtering it.
 	1.1. Importing CSV file, using external API etc. Need an option for this that is clear to see.
 	1.2. Interaction needs to be clean, try different 2-3 iterations for each big feature

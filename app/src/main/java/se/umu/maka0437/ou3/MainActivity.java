@@ -7,9 +7,7 @@ import static se.umu.maka0437.ou3.RegisterActivity.EXTRA_USER;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.LiveData;
 import androidx.room.Room;
 
 import android.Manifest;
@@ -17,7 +15,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +22,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +45,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends ToolbarActivity {
@@ -59,13 +54,13 @@ public class MainActivity extends ToolbarActivity {
     private static final String POS_KEY = "POS_KEY";
 
     ArrayList<String[]> movieList = new ArrayList<String[]>();
-    TextView welcomeText, movieText, positionText, genreText;
+    TextView welcomeText, movieText, positionText, genreText, descriptionText;
     Movie currentMovie;
     //Need this room db to be globally accessible so that activities/fragments can access it!
     AppDatabase db;
 
     Position currentPos;
-    String currentGenre, currentCountry;
+    String currentGenre, currentCountry, currentDescription;
     int currentYear;
     String testYear;
     User currentUser;
@@ -98,7 +93,8 @@ public class MainActivity extends ToolbarActivity {
         //welcomeText = findViewById(R.id.welcomeText);
         movieText = findViewById(R.id.movieText);
         genreText = findViewById(R.id.genreText);
-        positionText = findViewById(R.id.positionText);
+        descriptionText = findViewById(R.id.descriptionText);
+
 
         //Get back state
         if(savedInstanceState != null) {
@@ -114,7 +110,7 @@ public class MainActivity extends ToolbarActivity {
             @Override
             public void onClick(View v) {
                 //Find a specific movie
-                getMovieDB();
+                getMovie();
             }
         });
 
@@ -218,7 +214,7 @@ public class MainActivity extends ToolbarActivity {
         return ID;
     }
 
-    private void getMovieDB() {
+    private void getMovie() {
         //Get a random movie from the current database and display it on screen
         /*
         Movie movie = new Movie();
@@ -237,26 +233,69 @@ public class MainActivity extends ToolbarActivity {
        else {
             currentMovie = db.movieDao().getRandomMovie();
         }
-        //Get a random movie from that list and display it
+        //Get the description for the movie
+        if(currentMovie.description == null) {
+            getMovieDescription(currentMovie.imdbID);
+        }
 
 
         //currentMovie = db.movieDao().getRandomMovie();
-        String description = getImdbID();
 
         movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");
         genreText.setText(currentMovie.genre);
+        //Get description for movie
+
+
+
+
+        descriptionText.setText(currentDescription);
+
 
     }
 
+    private void getMovieDescription(String imdbTag) {
+        //Use The Movie Database API to get a random movie (OMDbapi.com)
+        String APIkey = "9297e7";
 
-    private void getMovieAPI() {
+        //Get movies from the OMDb API
+        //TODO only use completely random if user has no preference
+        String testURL = "http://www.omdbapi.com/?apikey=" + APIkey + "&i=" + imdbTag;
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        JsonObjectRequest jsonReq = new JsonObjectRequest(
+                Request.Method.GET,
+                testURL, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                //TODO: Handle response
+                Log.e("Data:", response.toString());
+
+                try {
+                    //Get the description for the movie
+                    currentDescription = response.getString("Plot");
+                } catch (JSONException e) {
+                    System.out.println(e);
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("ERROR:", error.toString());
+            }
+        });
+
+        queue.add(jsonReq);
+    }
+
+    private void getMovieAPI(String imdbTag) {
 
         //Use The Movie Database API to get a random movie (OMDbapi.com)
         String APIkey = "9297e7";
 
         //Get movies from the OMDb API
         //TODO only use completely random if user has no preference
-        String testURL = "http://www.omdbapi.com/?apikey=" + APIkey + "&i=" + getImdbID();
+        String testURL = "http://www.omdbapi.com/?apikey=" + APIkey + "&i=" + imdbTag;
 
         RequestQueue queue = Volley.newRequestQueue(this);
         JsonObjectRequest jsonReq = new JsonObjectRequest(
@@ -279,7 +318,9 @@ public class MainActivity extends ToolbarActivity {
                     currentMovie.releaseYear = releaseYear;
                     currentMovie.country = country;
 
-                    movieText.setText(title + " (" + releaseYear + ")");
+                    movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");
+                    genreText.setText(currentMovie.genre);
+                    descriptionText.setText(currentMovie.description);
 
                 } catch (JSONException e) {
                     System.out.println(e);
@@ -319,7 +360,12 @@ public class MainActivity extends ToolbarActivity {
 
             case R.id.action_importList:
                 //Import CSV file to database
-                //goToListActivity();
+                try {
+                    importCSV("WATCHLIST.csv");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Toast.makeText(MainActivity.this, "WATCHLIST imported!", Toast.LENGTH_SHORT).show();
 
                 //openFile();
                 //Let user choose their own file to import
@@ -380,6 +426,7 @@ public class MainActivity extends ToolbarActivity {
                 //Add the CSV elements to the database
                 movieList.add(line);
                 //Get relevant movie data -- Below is specifically CSV from imdb
+                String imdbID = line[1];
                 String description = line[4];
                 String name = line[5];
                 int year = Integer.parseInt(line[10]);
@@ -387,7 +434,7 @@ public class MainActivity extends ToolbarActivity {
                 String genre = line[11];
                 String directors = line[14];
 
-                Movie movie = new Movie(name, year, runTime, genre, description);
+                Movie movie = new Movie(name, year, runTime, genre, description, imdbID);
                 insertMovie(movie);
             }
 
