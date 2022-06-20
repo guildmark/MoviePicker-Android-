@@ -14,6 +14,8 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,6 +47,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MainActivity extends ToolbarActivity {
@@ -52,11 +55,11 @@ public class MainActivity extends ToolbarActivity {
     private static final String MOVIE_KEY = "MOVIE_KEY";
     private static final String GENRE_KEY = "GENRE_KEY";
     private static final String POS_KEY = "POS_KEY";
+    private static final String DESC_KEY = "DESC_KEY";
 
     ArrayList<String[]> movieList = new ArrayList<String[]>();
     TextView welcomeText, movieText, positionText, genreText, descriptionText;
     Movie currentMovie;
-    //Need this room db to be globally accessible so that activities/fragments can access it!
     AppDatabase db;
 
     Position currentPos;
@@ -64,6 +67,7 @@ public class MainActivity extends ToolbarActivity {
     int currentYear;
     String testYear;
     User currentUser;
+    String userCountry;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -94,15 +98,21 @@ public class MainActivity extends ToolbarActivity {
         movieText = findViewById(R.id.movieText);
         genreText = findViewById(R.id.genreText);
         descriptionText = findViewById(R.id.descriptionText);
-
+        positionText = findViewById(R.id.posText);
+        //countryText = findViewById(R.id.countryText);
 
         //Get back state
         if(savedInstanceState != null) {
             currentMovie = savedInstanceState.getParcelable(MOVIE_KEY);
             currentPos = savedInstanceState.getParcelable(POS_KEY);
+            currentDescription = savedInstanceState.getString(DESC_KEY);
             //Set correct texts
             movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");
             genreText.setText(currentMovie.genre);
+            descriptionText.setText(currentDescription);
+        }
+        else {
+            currentMovie = new Movie();
         }
 
         Button movieButton = findViewById(R.id.findMovieButton);
@@ -110,12 +120,35 @@ public class MainActivity extends ToolbarActivity {
             @Override
             public void onClick(View v) {
                 //Find a specific movie
+                if (currentMovie == null) {
+                    //Import default CSV file if no movies are found
+                    try {
+                        importCSV("WATCHLIST.csv");
+                        Toast.makeText(MainActivity.this,
+                                "No list found, importing default WATCHLIST...",
+                                Toast.LENGTH_SHORT).show();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 getMovie();
             }
         });
 
+        /*
+        Button posButton = findViewById(R.id.posButton);
+        posButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Find a specific movie
+                getUserPosition();
+                //getUserCountry();
+                //positionText.setText(currentPos.getLatitude() + " / " + currentPos.getLongitude());
+            }
+        });
+        /*
         //Import CSV file and add movies to database
-        Button csvButton = findViewById(R.id.CSVbutton);
+        Button csvButton = findViewById(R.id.csvButton);
         csvButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,22 +160,13 @@ public class MainActivity extends ToolbarActivity {
                 Toast.makeText(MainActivity.this, "WATCHLIST imported!", Toast.LENGTH_SHORT).show();
             }
         });
+        */
+
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        //positionText = findViewById(R.id.posText);
 
-        /*
-        //Add temporary position button for testing
-        Button getPositionButton = findViewById(R.id.posButton);
-        getPositionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Get position for viewer and display
-                getUserPosition();
-            }
-        });
 
-         */
+
 
 
         //Create database if not previously done
@@ -154,6 +178,7 @@ public class MainActivity extends ToolbarActivity {
                     .build();
         }
 
+        /*
         //If there is no movie, create a new one
         if(currentMovie == null) {
             currentMovie = new Movie();
@@ -162,10 +187,7 @@ public class MainActivity extends ToolbarActivity {
             //Restore movie
             currentMovie = savedInstanceState.getParcelable(MOVIE_KEY);
         }
-
-        //Save condition on recreation / rotate etc
-
-
+        */
     }
 
     //Use when coming back from other activites
@@ -176,8 +198,6 @@ public class MainActivity extends ToolbarActivity {
         //Add imported movies to database
         Intent intent = getIntent();
         //movieList = intent.getStringArrayExtra();
-
-
 
     }
 
@@ -204,6 +224,7 @@ public class MainActivity extends ToolbarActivity {
         super.onSaveInstanceState(saveInstanceState);
         saveInstanceState.putParcelable(MOVIE_KEY, currentMovie);
         saveInstanceState.putParcelable(POS_KEY, currentPos);
+        saveInstanceState.putString(DESC_KEY, currentDescription);
     }
 
     private String getImdbID() {
@@ -227,6 +248,7 @@ public class MainActivity extends ToolbarActivity {
         if(currentYear != 0) {
             //currentList = db.movieDao().findByYear(currentYear);
             currentList = db.movieDao().findByAll(currentYear, currentGenre);
+            //Get a random movie from the database list
             int randomInt = ThreadLocalRandom.current().nextInt(0, currentList.size());
             currentMovie = currentList.get(randomInt);
         }
@@ -234,21 +256,18 @@ public class MainActivity extends ToolbarActivity {
             currentMovie = db.movieDao().getRandomMovie();
         }
         //Get the description for the movie
-        if(currentMovie.description == null) {
-            getMovieDescription(currentMovie.imdbID);
-        }
+        //ADD SO THAT THE API CALL ONLY HAPPENS ONCE FOR EACH, APPEND TO CSV-FILE
 
-
+        getMovieDescription(currentMovie.imdbID);
+        currentMovie.description = currentDescription;
         //currentMovie = db.movieDao().getRandomMovie();
 
         movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");
+
+        //movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");
         genreText.setText(currentMovie.genre);
         //Get description for movie
-
-
-
-
-        descriptionText.setText(currentDescription);
+        descriptionText.setText(currentMovie.description);
 
 
     }
@@ -272,7 +291,9 @@ public class MainActivity extends ToolbarActivity {
 
                 try {
                     //Get the description for the movie
-                    currentDescription = response.getString("Plot");
+                    if(currentMovie.title == response.getString("Title")) {
+                        currentDescription = response.getString("Plot");
+                    }
                 } catch (JSONException e) {
                     System.out.println(e);
                 }
@@ -401,22 +422,15 @@ public class MainActivity extends ToolbarActivity {
         startActivity(intent);
     }
 
-    private void goToListActivity() {
-        //Go to list activity
-        Intent intent = new Intent(this, ListActivity.class);
-        startActivity(intent);
-    }
-
-
     //Function to import list from a CSV file to database
     private void importCSV(String fileName) throws IOException {
 
         String csvFileString = this.getApplicationInfo().dataDir + File.separatorChar
-                + "WATCHLIST.csv";
+                + fileName;
 
         try {
 
-            InputStreamReader is = new InputStreamReader(getAssets().open("WATCHLIST.csv"));
+            InputStreamReader is = new InputStreamReader(getAssets().open(fileName));
             CSVReader csvReader = new CSVReader(is);
             String[] line;
 
@@ -450,34 +464,51 @@ public class MainActivity extends ToolbarActivity {
 
     }
     private void getUserPosition() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            //Check for the permission
-            if(getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                //Get location
-                fusedLocationProviderClient.getLastLocation()
-                        .addOnSuccessListener(new OnSuccessListener<Location>() {
-                            @Override
-                            public void onSuccess(Location location) {
-                                if(location != null) {
+        //Check for the permission
+        if(getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            //Get location
+            fusedLocationProviderClient.getLastLocation()
+                    .addOnSuccessListener(new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if(location != null) {
 
-                                    double latitude = location.getLatitude();
-                                    double longitude = location.getLongitude();
+                                double latitude = location.getLatitude();
+                                double longitude = location.getLongitude();
 
-                                    currentPos = new Position(latitude, longitude);
-                                    //currentPos.setLatitude(latitude);
-                                    //currentPos.setLongitude(longitude);
-
-                                    positionText.setText("POSITION: " + latitude + " " + longitude);
-                                }
+                                currentPos = new Position(latitude, longitude);
+                                currentPos.setLatitude(latitude);
+                                currentPos.setLongitude(longitude);
+                                Toast.makeText(MainActivity.this, "Lat: " + latitude + " - Long: " + longitude, Toast.LENGTH_SHORT).show();
                             }
-                        });
-            }
-            else {
-                //If there is no permission, ask the user for it
-                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-            }
+                        }
+
+                    });
         }
+        else {
+            //If there is no permission, ask the user for it
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }
+
+
+    }
+
+    private void getUserCountry() {
+
+        getUserPosition();
+
+        Geocoder geocoder = new Geocoder(this.getApplicationContext(), Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(63.828869, 20.256670, 1);
+            if(addresses.size() > 0) {
+                userCountry = addresses.get(0).getCountryName();
+                Toast.makeText(this, "You are currently in " + userCountry, Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

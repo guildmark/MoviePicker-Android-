@@ -60,10 +60,4 @@ public abstract class ToolbarActivity extends BaseActivity {
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
     }
-
-    private void goToListActivity() {
-        //Go to list activity
-        Intent intent = new Intent(this, ListActivity.class);
-        startActivity(intent);
-    }
 }

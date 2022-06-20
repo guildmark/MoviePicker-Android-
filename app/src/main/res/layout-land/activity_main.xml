@@ -53,7 +53,7 @@
         app:layout_constraintTop_toTopOf="@+id/toolbar" />
 
     <Button
-        android:id="@+id/CSVbutton"
+        android:id="@+id/posButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/csv_button"

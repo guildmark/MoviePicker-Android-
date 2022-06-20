@@ -13,7 +13,7 @@
     <string name="register_user">Register User</string>
     <string name="movie_button">Find movie</string>
     <string name="csv_button">Import CSV</string>
-    <string name="pos_button">Get position</string>
+    <string name="pos_button">Get movie from my country</string>
     <string name="reg_button">Register</string>
     <string name="welcome_text">MOVIEPICKER</string>
     <string name="import_list">IMPORT LIST</string>

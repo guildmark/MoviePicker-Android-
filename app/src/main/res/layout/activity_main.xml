@@ -10,6 +10,7 @@
         android:id="@+id/toolbar"
         layout="@layout/toolbar" />
 
+
     <TextView
         android:id="@+id/genreText"
         android:layout_width="wrap_content"
@@ -27,6 +28,7 @@
 
     <TextView
         android:id="@+id/movieText"
+        android:textStyle="bold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -66,17 +68,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.912" />
-
-    <Button
-        android:id="@+id/CSVbutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/csv_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.465"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintVertical_bias="0.848" />
 
     <ImageView
         android:id="@+id/imageView2"
@@ -89,5 +81,22 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.125"
         app:srcCompat="@drawable/film_roll" />
+
+    <TextView
+        android:id="@+id/countryText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/toolbar" />
+
+    <TextView
+        android:id="@+id/posText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="792dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
