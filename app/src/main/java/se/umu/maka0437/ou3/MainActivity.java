@@ -24,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,6 +69,7 @@ public class MainActivity extends ToolbarActivity {
     String testYear;
     User currentUser;
     String userCountry;
+    ImageView mainImage;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -98,8 +100,9 @@ public class MainActivity extends ToolbarActivity {
         movieText = findViewById(R.id.movieText);
         genreText = findViewById(R.id.genreText);
         descriptionText = findViewById(R.id.descriptionText);
-        positionText = findViewById(R.id.posText);
+        //positionText = findViewById(R.id.posText);
         //countryText = findViewById(R.id.countryText);
+        mainImage = findViewById(R.id.mainImage);
 
         //Get back state
         if(savedInstanceState != null) {
@@ -188,6 +191,9 @@ public class MainActivity extends ToolbarActivity {
             currentMovie = savedInstanceState.getParcelable(MOVIE_KEY);
         }
         */
+
+        //Set image as film roll for default
+        mainImage.setImageResource(R.drawable.film_roll);
     }
 
     //Use when coming back from other activites
@@ -269,6 +275,9 @@ public class MainActivity extends ToolbarActivity {
         //Get description for movie
         descriptionText.setText(currentMovie.description);
 
+        //Change the image to correct depending on genre (Avoid movie images for copyright)
+        setImage(mainImage);
+
 
     }
 
@@ -293,6 +302,12 @@ public class MainActivity extends ToolbarActivity {
                     //Get the description for the movie
                     if(currentMovie.title == response.getString("Title")) {
                         currentDescription = response.getString("Plot");
+                        descriptionText.setText(currentMovie.description);
+
+                    }
+                    else {
+                        currentDescription = response.getString("Plot");
+                        descriptionText.setText(currentMovie.description);
                     }
                 } catch (JSONException e) {
                     System.out.println(e);
@@ -509,6 +524,16 @@ public class MainActivity extends ToolbarActivity {
             e.printStackTrace();
         }
 
+    }
+
+    private void setImage(ImageView image) {
+
+        if(currentMovie.genre.contains("Drama")) {
+            mainImage.setImageResource(R.drawable.drama);
+        }
+        else if(currentMovie.genre.contains("Sci-Fi")) {
+            mainImage.setImageResource(R.drawable.sci_fi);
+        }
     }
 
 }

@@ -12,6 +12,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.List;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -29,6 +30,9 @@ public class User implements Parcelable {
 
     @ColumnInfo(name = "password")
     public String password;
+
+    //Use profile or user to save a favorite list
+    //public List<Movie> favoriteMovies;
 
     public String hashedPass;
 

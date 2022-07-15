@@ -18,7 +18,7 @@
     <string name="welcome_text">MOVIEPICKER</string>
     <string name="import_list">IMPORT LIST</string>
     <string name="genre_text">Genre</string>
-    <string name="start_image_desc">Picture from "Gone with the wind" with Vivien Leigh and Hattie McDaniels</string>
+    <string name="start_image_desc">Image showing classic movie reel</string>
 
     <string name="filter_year">Year</string>
     <string name="filter_genre">Genre</string>
