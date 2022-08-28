@@ -83,6 +83,7 @@ public class MainActivity extends ToolbarActivity {
                 currentYear = intent.getIntExtra(EXTRA_YEAR, 0);
                 currentGenre = intent.getStringExtra(EXTRA_GENRE);
                 currentCountry = intent.getStringExtra(EXTRA_COUNTRY);
+                //currentDescription = intent.getStringExtra(EXTRA_DESC);
                 currentUser = intent.getParcelableExtra(EXTRA_USER); //Get current user
             }
         }
@@ -220,6 +221,11 @@ public class MainActivity extends ToolbarActivity {
         new Thread(() -> db.movieDao().insertMovie(movie)).start();
     }
 
+    //Function to add description to the movie database so that the API call is no longer required
+    private void updateMovieDescription(Movie movie) {
+        new Thread(() -> db.movieDao().updateDescription(movie)).start();
+    }
+
     //Delete a movie from database
     private void deleteMovie(Movie movie) {
         new Thread(() -> db.movieDao().deleteMovie(movie)).start();
@@ -231,6 +237,7 @@ public class MainActivity extends ToolbarActivity {
         saveInstanceState.putParcelable(MOVIE_KEY, currentMovie);
         saveInstanceState.putParcelable(POS_KEY, currentPos);
         saveInstanceState.putString(DESC_KEY, currentDescription);
+
     }
 
     private String getImdbID() {
@@ -264,8 +271,19 @@ public class MainActivity extends ToolbarActivity {
         //Get the description for the movie
         //ADD SO THAT THE API CALL ONLY HAPPENS ONCE FOR EACH, APPEND TO CSV-FILE
 
+        /*
+        *
+        * ENABLE WHEN DEBUGGED
+        *  if(currentMovie.description == null) {
+            //Get the description from the API and then update the DB entry
+            getMovieDescription(currentMovie.imdbID);
+            updateMovieDescription(currentMovie);
+        }
+         */
+
         getMovieDescription(currentMovie.imdbID);
-        currentMovie.description = currentDescription;
+
+        //currentMovie.description = currentDescription;
         //currentMovie = db.movieDao().getRandomMovie();
 
         movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");
@@ -273,7 +291,7 @@ public class MainActivity extends ToolbarActivity {
         //movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");
         genreText.setText(currentMovie.genre);
         //Get description for movie
-        descriptionText.setText(currentMovie.description);
+        //escriptionText.setText(currentMovie.description);
 
         //Change the image to correct depending on genre (Avoid movie images for copyright)
         setImage(mainImage);
@@ -301,13 +319,14 @@ public class MainActivity extends ToolbarActivity {
                 try {
                     //Get the description for the movie
                     if(currentMovie.title == response.getString("Title")) {
-                        currentDescription = response.getString("Plot");
+                        currentMovie.description = response.getString("Plot");
                         descriptionText.setText(currentMovie.description);
 
                     }
                     else {
-                        currentDescription = response.getString("Plot");
+                        currentMovie.description = response.getString("Plot");
                         descriptionText.setText(currentMovie.description);
+                        //Update the database entry with description
                     }
                 } catch (JSONException e) {
                     System.out.println(e);
@@ -533,6 +552,12 @@ public class MainActivity extends ToolbarActivity {
         }
         else if(currentMovie.genre.contains("Sci-Fi")) {
             mainImage.setImageResource(R.drawable.sci_fi);
+        }
+        else if(currentMovie.genre.contains("Action")) {
+            mainImage.setImageResource(R.drawable.people);
+        }
+        else if(currentMovie.genre.contains("Romance")) {
+            mainImage.setImageResource(R.drawable.hearts);
         }
     }
 

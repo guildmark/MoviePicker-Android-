@@ -5,6 +5,7 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -45,6 +46,9 @@ public interface MovieDao {
 
     @Insert
     void insertAll(Movie... movies);
+
+    @Update
+    void updateDescription(Movie movie);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertMovie(Movie movie);
