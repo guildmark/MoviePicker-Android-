@@ -165,13 +165,7 @@ public class MainActivity extends ToolbarActivity {
             }
         });
         */
-
-
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
-
-
-
 
         //Create database if not previously done
         if(db == null) {
@@ -222,13 +216,18 @@ public class MainActivity extends ToolbarActivity {
     }
 
     //Function to add description to the movie database so that the API call is no longer required
-    private void updateMovieDescription(Movie movie) {
-        new Thread(() -> db.movieDao().updateDescription(movie)).start();
+    private void updateMovie(String desc, int id) {
+        new Thread(() -> db.movieDao().updateDesc(desc, id)).start();
     }
 
     //Delete a movie from database
     private void deleteMovie(Movie movie) {
         new Thread(() -> db.movieDao().deleteMovie(movie)).start();
+    }
+
+    //Get the description from the database
+    private String getMovieDescriptionDB(String title) {
+        return db.movieDao().getDescription(title);
     }
 
     @Override
@@ -269,29 +268,26 @@ public class MainActivity extends ToolbarActivity {
             currentMovie = db.movieDao().getRandomMovie();
         }
         //Get the description for the movie
-        //ADD SO THAT THE API CALL ONLY HAPPENS ONCE FOR EACH, APPEND TO CSV-FILE
+        //Get from API only once, after that append to the DB entry
 
-        /*
-        *
-        * ENABLE WHEN DEBUGGED
-        *  if(currentMovie.description == null) {
-            //Get the description from the API and then update the DB entry
-            getMovieDescription(currentMovie.imdbID);
-            updateMovieDescription(currentMovie);
+        if(currentMovie.description.equals("")) {
+            //Update DB entry with new movie description, less API calls!
+            getMovieDescriptionAPI(currentMovie.imdbID);
+            //updateMovie(currentMovie.description, currentMovie.uid); //UPPDATERAS MED ""?
         }
-         */
 
-        getMovieDescription(currentMovie.imdbID);
+        else {
+            //Get the description from the database
+            //currentMovie.description = getMovieDescriptionDB(currentMovie.title);
 
-        //currentMovie.description = currentDescription;
-        //currentMovie = db.movieDao().getRandomMovie();
+        }
+
+        descriptionText.setText(currentMovie.description);
 
         movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");
 
         //movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");
         genreText.setText(currentMovie.genre);
-        //Get description for movie
-        //escriptionText.setText(currentMovie.description);
 
         //Change the image to correct depending on genre (Avoid movie images for copyright)
         setImage(mainImage);
@@ -299,7 +295,7 @@ public class MainActivity extends ToolbarActivity {
 
     }
 
-    private void getMovieDescription(String imdbTag) {
+    private void getMovieDescriptionAPI(String imdbTag) {
         //Use The Movie Database API to get a random movie (OMDbapi.com)
         String APIkey = "9297e7";
 
@@ -321,11 +317,13 @@ public class MainActivity extends ToolbarActivity {
                     if(currentMovie.title == response.getString("Title")) {
                         currentMovie.description = response.getString("Plot");
                         descriptionText.setText(currentMovie.description);
+                        updateMovie(currentMovie.description, currentMovie.uid);
 
                     }
                     else {
                         currentMovie.description = response.getString("Plot");
                         descriptionText.setText(currentMovie.description);
+                        updateMovie(currentMovie.description, currentMovie.uid);
                         //Update the database entry with description
                     }
                 } catch (JSONException e) {
