@@ -31,7 +31,7 @@ public class User implements Parcelable {
     @ColumnInfo(name = "password")
     public String password;
 
-    //Use profile or user to save a favorite list
+    //Use profile or user to save a favorite list - singleton design???
     //public List<Movie> favoriteMovies;
 
     public String hashedPass;

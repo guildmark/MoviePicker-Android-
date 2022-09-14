@@ -75,7 +75,7 @@ public class RegisterActivity extends AppCompatActivity {
         byte[] salt = new byte[16];
         random.nextBytes(salt);
 
-        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 128);
+        KeySpec spec = new PBEKeySpec(pass.toCharArray(), salt, 65536, 128);
         SecretKeyFactory factory = null;
         try {
             //Change string?

@@ -50,13 +50,13 @@ public interface MovieDao {
     @Update
     void updateMovie(Movie movie);
 
-    @Query("SELECT description FROM movie WHERE title=:title")
-    String getDescription(String title);
+    @Query("SELECT description FROM movie WHERE uid=:id")
+    String getDescription(int id);
 
     @Query("UPDATE movie SET description=:desc WHERE uid=:id")
     void updateDesc(String desc, int id);
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertMovie(Movie movie);
 
 }

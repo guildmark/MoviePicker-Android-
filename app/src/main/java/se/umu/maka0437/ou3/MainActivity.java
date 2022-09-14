@@ -17,8 +17,8 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -58,7 +58,7 @@ public class MainActivity extends ToolbarActivity {
     private static final String POS_KEY = "POS_KEY";
     private static final String DESC_KEY = "DESC_KEY";
 
-    ArrayList<String[]> movieList = new ArrayList<String[]>();
+    ArrayList<String[]> movieList = new ArrayList<>();
     TextView welcomeText, movieText, positionText, genreText, descriptionText;
     Movie currentMovie;
     AppDatabase db;
@@ -94,7 +94,7 @@ public class MainActivity extends ToolbarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar appBar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar appBar = findViewById(R.id.toolbar);
         setSupportActionBar(appBar);
 
         //welcomeText = findViewById(R.id.welcomeText);
@@ -127,7 +127,7 @@ public class MainActivity extends ToolbarActivity {
                 if (currentMovie == null) {
                     //Import default CSV file if no movies are found
                     try {
-                        importCSV("WATCHLIST.csv");
+                        importDefaultCSV("WATCHLIST.csv");
                         Toast.makeText(MainActivity.this,
                                 "No list found, importing default WATCHLIST...",
                                 Toast.LENGTH_SHORT).show();
@@ -226,8 +226,8 @@ public class MainActivity extends ToolbarActivity {
     }
 
     //Get the description from the database
-    private String getMovieDescriptionDB(String title) {
-        return db.movieDao().getDescription(title);
+    private String getMovieDescriptionDB(int id) {
+        return db.movieDao().getDescription(id);
     }
 
     @Override
@@ -278,7 +278,7 @@ public class MainActivity extends ToolbarActivity {
 
         else {
             //Get the description from the database
-            //currentMovie.description = getMovieDescriptionDB(currentMovie.title);
+            currentMovie.description = getMovieDescriptionDB(currentMovie.uid);
 
         }
 
@@ -414,7 +414,7 @@ public class MainActivity extends ToolbarActivity {
             case R.id.action_importList:
                 //Import CSV file to database
                 try {
-                    importCSV("WATCHLIST.csv");
+                    importDefaultCSV("WATCHLIST.csv");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -455,7 +455,7 @@ public class MainActivity extends ToolbarActivity {
     }
 
     //Function to import list from a CSV file to database
-    private void importCSV(String fileName) throws IOException {
+    private void importDefaultCSV(String fileName) throws IOException {
 
         String csvFileString = this.getApplicationInfo().dataDir + File.separatorChar
                 + fileName;
@@ -495,6 +495,17 @@ public class MainActivity extends ToolbarActivity {
         }
 
     }
+
+    //Let user choose file to import
+
+    void importCSV() {
+        Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+        chooseFile.setType("*/*");
+        chooseFile = Intent.createChooser(chooseFile, "Choose a file");
+        //startActivityForResult(chooseFile, );
+    }
+
+
     private void getUserPosition() {
         //Check for the permission
         if(getApplicationContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
