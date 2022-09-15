@@ -15,6 +15,7 @@ public class Movie implements Parcelable {
         title = "";
         description = "";
         country = "";
+        genre = "";
         releaseYear = 0;
         runTime = 0;
     }

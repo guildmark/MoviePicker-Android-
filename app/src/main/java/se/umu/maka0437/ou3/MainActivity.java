@@ -139,34 +139,6 @@ public class MainActivity extends ToolbarActivity {
             }
         });
 
-        /*
-        Button posButton = findViewById(R.id.posButton);
-        posButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Find a specific movie
-                getUserPosition();
-                //getUserCountry();
-                //positionText.setText(currentPos.getLatitude() + " / " + currentPos.getLongitude());
-            }
-        });
-        /*
-        //Import CSV file and add movies to database
-        Button csvButton = findViewById(R.id.csvButton);
-        csvButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    importCSV("WATCHLIST.csv");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Toast.makeText(MainActivity.this, "WATCHLIST imported!", Toast.LENGTH_SHORT).show();
-            }
-        });
-        */
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-
         db = AppDatabase.getInstance(this);
         /*
 
@@ -207,25 +179,33 @@ public class MainActivity extends ToolbarActivity {
 
     }
 
-    
+
     private void getRandomMovie() {
         //Need to run on new thread because it otherwise might lock UI (Illegal state exception)
         Thread thread = new Thread(new Runnable() {
-            Movie movie;
-
             @Override
             public void run() {
-                movie = AppDatabase.getInstance(getApplicationContext())
+                currentMovie = AppDatabase.getInstance(getApplicationContext())
                         .movieDao()
                         .getRandomMovie();
-            }
-            public Movie getMovie() {
-                return movie;
             }
         });
 
         thread.start();
     }
+
+    private void getMovieDescDB(int id) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                currentMovie.description = AppDatabase.getInstance(getApplicationContext())
+                        .movieDao()
+                        .getDescription(id);
+            }
+        });
+        thread.start();
+    }
+
 
 
 
@@ -256,6 +236,7 @@ public class MainActivity extends ToolbarActivity {
     private String getMovieDescriptionDB(int id) {
         return db.movieDao().getDescription(id);
     }
+
 
     @Override
     public void onSaveInstanceState(Bundle saveInstanceState)  {
@@ -292,7 +273,7 @@ public class MainActivity extends ToolbarActivity {
             currentMovie = currentList.get(randomInt);
         }
        else {
-            currentMovie = db.movieDao().getRandomMovie();
+            getRandomMovie();
         }
         //Get the description for the movie
         //Get from API only once, after that append to the DB entry
@@ -305,8 +286,8 @@ public class MainActivity extends ToolbarActivity {
 
         else {
             //Get the description from the database
-            currentMovie.description = getMovieDescriptionDB(currentMovie.uid);
-
+            //currentMovie.description = getMovieDescriptionDB(currentMovie.uid);
+            getMovieDescDB(currentMovie.uid);
         }
 
         descriptionText.setText(currentMovie.description);
