@@ -167,6 +167,9 @@ public class MainActivity extends ToolbarActivity {
         */
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
 
+        db = AppDatabase.getInstance(this);
+        /*
+
         //Create database if not previously done
         if(db == null) {
             db = Room.databaseBuilder(getApplicationContext(),
@@ -175,6 +178,8 @@ public class MainActivity extends ToolbarActivity {
                     .allowMainThreadQueries() //temporary until fix?
                     .build();
         }
+        */
+
 
         /*
         //If there is no movie, create a new one
@@ -201,6 +206,28 @@ public class MainActivity extends ToolbarActivity {
         //movieList = intent.getStringArrayExtra();
 
     }
+
+    
+    private void getRandomMovie() {
+        //Need to run on new thread because it otherwise might lock UI (Illegal state exception)
+        Thread thread = new Thread(new Runnable() {
+            Movie movie;
+
+            @Override
+            public void run() {
+                movie = AppDatabase.getInstance(getApplicationContext())
+                        .movieDao()
+                        .getRandomMovie();
+            }
+            public Movie getMovie() {
+                return movie;
+            }
+        });
+
+        thread.start();
+    }
+
+
 
     private void insertUser(User user) {
         new Thread(() -> db.userDao().insertUser(user));
