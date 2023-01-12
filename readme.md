@@ -7,8 +7,8 @@ CSV file into a database with CRUD functionality to find.
 
 1. Uses a database with CRUD functionality
 2. Uses some kind of API call to get data.
-3. Uses a MVC design pattern.
-4. Has structured code with comments.
+3. Uses a Model-View-Controller structure.
+4. Clean code.
 5. Focus on accessibility
 6. Implements a simple login system with user authentication and password hashing.
 
