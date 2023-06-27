@@ -18,6 +18,7 @@ public abstract class AppDatabase extends RoomDatabase {
     static AppDatabase getInstance(Context context) {
         if(INSTANCE == null) {
             synchronized (AppDatabase.class) {
+                //Singleton DB pattern
                 if(INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             AppDatabase.class, "movieDB")

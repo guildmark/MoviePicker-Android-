@@ -61,7 +61,7 @@ public class MainActivity extends ToolbarActivity {
     ArrayList<String[]> movieList = new ArrayList<>();
     TextView welcomeText, movieText, positionText, genreText, descriptionText;
     Movie currentMovie;
-    AppDatabase db;
+    List<Movie> filteredMovies;
 
     Position currentPos;
     String currentGenre, currentCountry, currentDescription;
@@ -139,7 +139,6 @@ public class MainActivity extends ToolbarActivity {
             }
         });
 
-        db = AppDatabase.getInstance(this);
         /*
 
         //Create database if not previously done
@@ -210,32 +209,35 @@ public class MainActivity extends ToolbarActivity {
 
 
     private void insertUser(User user) {
-        new Thread(() -> db.userDao().insertUser(user));
+        new Thread(() -> AppDatabase.getInstance(getApplicationContext()).userDao().insertUser(user));
     }
 
     private void deleteUser(User user) {
-        new Thread(() -> db.userDao().deleteUser(user));
+        new Thread(() -> AppDatabase.getInstance(getApplicationContext()).userDao().deleteUser(user));
     }
 
     //Insert movie into database
     private void insertMovie(Movie movie) {
-        new Thread(() -> db.movieDao().insertMovie(movie)).start();
+        new Thread(() -> AppDatabase.getInstance(getApplicationContext()).movieDao().insertMovie(movie)).start();
     }
 
     //Function to add description to the movie database so that the API call is no longer required
     private void updateMovie(String desc, int id) {
-        new Thread(() -> db.movieDao().updateDesc(desc, id)).start();
+        new Thread(() -> AppDatabase.getInstance(getApplicationContext()).movieDao().updateDesc(desc, id)).start();
     }
 
     //Delete a movie from database
     private void deleteMovie(Movie movie) {
-        new Thread(() -> db.movieDao().deleteMovie(movie)).start();
+        new Thread(() -> AppDatabase.getInstance(getApplicationContext()).movieDao().deleteMovie(movie)).start();
     }
 
+    /*
     //Get the description from the database
     private String getMovieDescriptionDB(int id) {
         return db.movieDao().getDescription(id);
     }
+    */
+
 
 
     @Override
@@ -255,22 +257,24 @@ public class MainActivity extends ToolbarActivity {
         return ID;
     }
 
+    private void getFilteredMovie(int year, String genre) {
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                filteredMovies = AppDatabase.getInstance(getApplicationContext()).movieDao().findByAll(year, genre);
+                int randomInt = ThreadLocalRandom.current().nextInt(0, filteredMovies.size());
+                currentMovie = filteredMovies.get(randomInt);
+            }
+        });
+        thread.start();
+    }
+
     private void getMovie() {
         //Get a random movie from the current database and display it on screen
-        /*
-        Movie movie = new Movie();
-        movie = db.movieDao().getRandomMovie();
-        */
-
-        //Check if the user has chosen any filters
-        List<Movie> currentList = new ArrayList<Movie>();
 
         if(currentYear != 0) {
             //currentList = db.movieDao().findByYear(currentYear);
-            currentList = db.movieDao().findByAll(currentYear, currentGenre);
-            //Get a random movie from the database list
-            int randomInt = ThreadLocalRandom.current().nextInt(0, currentList.size());
-            currentMovie = currentList.get(randomInt);
+            getFilteredMovie(currentYear, currentGenre);
         }
        else {
             getRandomMovie();
@@ -278,17 +282,19 @@ public class MainActivity extends ToolbarActivity {
         //Get the description for the movie
         //Get from API only once, after that append to the DB entry
 
-        if(currentMovie.description.equals("")) {
+        //PROBLEM: ALTERNERAR MELLAN IF-SATSER
+        //if(currentMovie.description.equals("")) {
             //Update DB entry with new movie description, less API calls!
-            getMovieDescriptionAPI(currentMovie.imdbID);
-            //updateMovie(currentMovie.description, currentMovie.uid); //UPPDATERAS MED ""?
-        }
-
+        getMovieDescriptionAPI(currentMovie.imdbID);
+        //}
+        /*
         else {
             //Get the description from the database
             //currentMovie.description = getMovieDescriptionDB(currentMovie.uid);
             getMovieDescDB(currentMovie.uid);
         }
+        */
+
 
         descriptionText.setText(currentMovie.description);
 
@@ -326,6 +332,7 @@ public class MainActivity extends ToolbarActivity {
                         currentMovie.description = response.getString("Plot");
                         descriptionText.setText(currentMovie.description);
                         updateMovie(currentMovie.description, currentMovie.uid);
+                        System.out.println("Added description: " + currentMovie.description + "to" + " movie: " + currentMovie.title);
 
                     }
                     else {
