@@ -70,6 +70,7 @@ public class MainActivity extends ToolbarActivity {
     User currentUser;
     String userCountry;
     ImageView mainImage;
+    View titleText;
 
     private FusedLocationProviderClient fusedLocationProviderClient;
 
@@ -104,6 +105,7 @@ public class MainActivity extends ToolbarActivity {
         //positionText = findViewById(R.id.posText);
         //countryText = findViewById(R.id.countryText);
         mainImage = findViewById(R.id.mainImage);
+        titleText = findViewById(R.id.titleScreen);
 
         //Get back state
         if(savedInstanceState != null) {
@@ -117,6 +119,7 @@ public class MainActivity extends ToolbarActivity {
         }
         else {
             currentMovie = new Movie();
+            showTitle = true;
         }
 
         Button movieButton = findViewById(R.id.findMovieButton);
@@ -139,30 +142,6 @@ public class MainActivity extends ToolbarActivity {
             }
         });
 
-        /*
-
-        //Create database if not previously done
-        if(db == null) {
-            db = Room.databaseBuilder(getApplicationContext(),
-                    AppDatabase.class, "movieDB")
-                    .fallbackToDestructiveMigration()
-                    .allowMainThreadQueries() //temporary until fix?
-                    .build();
-        }
-        */
-
-
-        /*
-        //If there is no movie, create a new one
-        if(currentMovie == null) {
-            currentMovie = new Movie();
-        }
-        else {
-            //Restore movie
-            currentMovie = savedInstanceState.getParcelable(MOVIE_KEY);
-        }
-        */
-
         //Set image as film roll for default
         mainImage.setImageResource(R.drawable.film_roll);
     }
@@ -178,15 +157,61 @@ public class MainActivity extends ToolbarActivity {
 
     }
 
+    private void getMovie() {
+        //Get a random movie from the current database and display it on screen
+
+        //Hide the title screen
+        titleText.setVisibility(View.INVISIBLE);
+
+        if(currentYear != 0) {
+            //currentList = db.movieDao().findByYear(currentYear);
+            getFilteredMovie(currentYear, currentGenre);
+        }
+        else {
+            getRandomMovie();
+        }
+        //Get the description for the movie
+        //Get from API only once, after that append to the DB entry
+
+        //PROBLEM: ALTERNERAR MELLAN IF-SATSER
+        //if(currentMovie.description.equals("")) {
+        //Update DB entry with new movie description, less API calls!
+        getMovieDescriptionAPI(currentMovie.imdbID);
+        //}
+        /*
+        else {
+            //Get the description from the database
+            //currentMovie.description = getMovieDescriptionDB(currentMovie.uid);
+            getMovieDescDB(currentMovie.uid);
+        }
+        */
+
+
+        descriptionText.setText(currentMovie.description);
+
+        movieText.setText(new StringBuilder().append(currentMovie.title).append(" (").append(currentMovie.releaseYear).append(")").toString());
+
+        //movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");
+        genreText.setText(currentMovie.genre);
+
+        //Change the image to correct depending on genre (Avoid movie images for copyright)
+        setImage(mainImage);
+
+
+    }
+
 
     private void getRandomMovie() {
         //Need to run on new thread because it otherwise might lock UI (Illegal state exception)
+
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
+                System.out.println("Getting movie...");
                 currentMovie = AppDatabase.getInstance(getApplicationContext())
                         .movieDao()
                         .getRandomMovie();
+                System.out.println("Found movie: " + currentMovie.title + " (" + currentMovie.releaseYear + ")" + " IMDb ID: " + currentMovie.imdbID);
             }
         });
 
@@ -269,46 +294,6 @@ public class MainActivity extends ToolbarActivity {
         thread.start();
     }
 
-    private void getMovie() {
-        //Get a random movie from the current database and display it on screen
-
-        if(currentYear != 0) {
-            //currentList = db.movieDao().findByYear(currentYear);
-            getFilteredMovie(currentYear, currentGenre);
-        }
-       else {
-            getRandomMovie();
-        }
-        //Get the description for the movie
-        //Get from API only once, after that append to the DB entry
-
-        //PROBLEM: ALTERNERAR MELLAN IF-SATSER
-        //if(currentMovie.description.equals("")) {
-            //Update DB entry with new movie description, less API calls!
-        getMovieDescriptionAPI(currentMovie.imdbID);
-        //}
-        /*
-        else {
-            //Get the description from the database
-            //currentMovie.description = getMovieDescriptionDB(currentMovie.uid);
-            getMovieDescDB(currentMovie.uid);
-        }
-        */
-
-
-        descriptionText.setText(currentMovie.description);
-
-        movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");
-
-        //movieText.setText(currentMovie.title + " (" + currentMovie.releaseYear + ")");
-        genreText.setText(currentMovie.genre);
-
-        //Change the image to correct depending on genre (Avoid movie images for copyright)
-        setImage(mainImage);
-
-
-    }
-
     private void getMovieDescriptionAPI(String imdbTag) {
         //Use The Movie Database API to get a random movie (OMDbapi.com)
         String APIkey = "9297e7";
@@ -332,7 +317,7 @@ public class MainActivity extends ToolbarActivity {
                         currentMovie.description = response.getString("Plot");
                         descriptionText.setText(currentMovie.description);
                         updateMovie(currentMovie.description, currentMovie.uid);
-                        System.out.println("Added description: " + currentMovie.description + "to" + " movie: " + currentMovie.title);
+                        //System.out.println("Added description: " + currentMovie.description + "to" + " movie: " + currentMovie.title);
 
                     }
                     else {

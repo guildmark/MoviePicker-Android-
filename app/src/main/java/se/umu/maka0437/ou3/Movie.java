@@ -12,12 +12,13 @@ import androidx.room.PrimaryKey;
 public class Movie implements Parcelable {
 
     public Movie() {
-        title = "";
-        description = "";
-        country = "";
-        genre = "";
-        releaseYear = 0;
-        runTime = 0;
+        title = "The Seventh Seal";
+        description = "A knight returning to Sweden after the Crusades seeks answers about life, " +
+                "death, and the existence of God as he plays chess against the Grim Reaper during the Black Plague.";
+        country = "Sweden";
+        genre = "Drama";
+        releaseYear = 1957;
+        runTime = 96;
     }
 
     public Movie(String name, int year, int time, String genre, String description, String imdbID) {
